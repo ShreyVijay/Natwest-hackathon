@@ -13,8 +13,8 @@
  */
 
 import type { GeminiIntent, MLOutputContract, MetricPoint, ChartDataContract, Persona, SuggestedVisual, DatasetSchema } from '../types';
+import { buildApiUrl } from '../config/api';
 
-const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:5000';
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
@@ -100,7 +100,7 @@ export async function getInsightResponse(
 // ================================================================
 
 async function fetchFromBackend(query: string, dataset_ref: string, target_schema: DatasetSchema | null, language: string): Promise<MLOutputContract> {
-  const response = await fetch(`${CHAT_API_URL}/api/query`, {
+  const response = await fetch(buildApiUrl('/api/query'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, dataset_ref, target_schema, language }),
@@ -385,7 +385,7 @@ async function enrichWithGroq(
     .map(m => `${m.label}: ${m.value.toLocaleString()} ${m.unit ?? ''} (prev: ${m.prev_value?.toLocaleString() ?? 'N/A'})`)
     .join('; ');
 
-  const systemPrompt = `You are a data storytelling assistant for Talk2Data.
+  const systemPrompt = `You are a data storytelling assistant for Bolt.
 You rewrite analytical summaries for different user personas.
 Always reference actual numbers. Respond ONLY with a valid JSON object containing keys: simple, medium, advanced, action_text.
 You MUST generate your final narrative response entirely in the language corresponding to this ISO code: [${language}]. Do not output English unless the code is 'en'.`;
@@ -476,3 +476,4 @@ function buildRecommendations(persona: Persona, queryType: string): string[] {
   const p = recs[persona];
   return (p[queryType] ?? p.Default ?? []) as string[];
 }
+

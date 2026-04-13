@@ -1,5 +1,6 @@
 const { generateExecutionPlan } = require('../services/orchestratorService');
 const axios = require('axios'); // Remember to run: npm install axios
+const { executionEngineUrl } = require('../config/runtime');
 
 /**
  * Orchestrates the full query pipeline: 
@@ -19,7 +20,7 @@ const processQuery = async (req, res) => {
 
         let pureMathData;
         try {
-            const mathResponse = await axios.post('http://localhost:8000/compute', mlPayload);
+            const mathResponse = await axios.post(`${executionEngineUrl}/compute`, mlPayload);
             pureMathData = mathResponse.data;
         } catch (mathError) {
             if (mathError.code === 'ECONNREFUSED') {

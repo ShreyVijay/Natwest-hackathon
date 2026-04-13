@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useAppContext } from '../stores/appStore';
+import { buildApiUrl } from '../config/api';
 import {
   Upload, Database, ChevronRight, CheckCircle2, LogOut,
   FileText, Cpu, BarChart2, AlertCircle, Loader2,
@@ -27,7 +28,6 @@ export const FileUploader: React.FC = () => {
   const [dragOver, setDragOver] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const API_URL = (import.meta.env.VITE_CHAT_API_URL as string) || 'http://localhost:5000';
 
   // ── Enterprise continue (Superstore) ──────────────────────────────
   const handleEnterpriseContinue = () => {
@@ -61,7 +61,7 @@ export const FileUploader: React.FC = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const uploadRes = await fetch(`${API_URL}/api/upload`, {
+      const uploadRes = await fetch(buildApiUrl('/api/upload'), {
         method: 'POST',
         body: formData,
       });
@@ -79,7 +79,7 @@ export const FileUploader: React.FC = () => {
     // ── Step 2: Auto-profile schema ──────────────────────────────
     setUploadStage('profiling');
     try {
-      const profileRes = await fetch(`${API_URL}/api/dataset/profile`, {
+      const profileRes = await fetch(buildApiUrl('/api/dataset/profile'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dataset_ref: datasetRef }),

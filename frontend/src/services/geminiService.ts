@@ -312,7 +312,7 @@ export async function simplifyBlock(
     : null;
 
   try {
-    const systemPrompt = `You are a data simplification assistant for Talk2Data.
+    const systemPrompt = `You are a data simplification assistant for Bolt.
 A user clicked "Help me understand" on a specific block inside a data analysis response.
 User persona: ${persona} — ${STYLE_GUIDE[persona]}
 Explain the block text in 2-3 sentences. Reference actual numbers. Do NOT repeat the block text. Adapt tone to the persona. Reply with ONLY the explanation text.`;
@@ -347,12 +347,12 @@ Text: "${blockContent}"`;
 // ================================================================
 
 export async function handleConversationalQuery(query: string, persona: Persona, language: string): Promise<string> {
-  const fallback = "Hello! I am your Talk2Data assistant. I can analyze revenue, costs, churn, and answer deep operational questions. What can I look up for you today?";
+  const fallback = "Hello! I am your Bolt assistant. I can analyze revenue, costs, churn, and answer deep operational questions. What can I look up for you today?";
   
   if (!GROQ_API_KEY) return fallback;
 
   try {
-    const systemPrompt = `You are the Talk2Data enterprise AI assistant.
+    const systemPrompt = `You are the Bolt enterprise AI assistant.
 The active interface persona is: ${persona}.
 Your goal is to answer data questions for the user.
 Respond nicely and conversationally in 1-2 sentences.
@@ -367,3 +367,4 @@ You MUST generate your final narrative response entirely in the language corresp
     return fallback;
   }
 }
+

@@ -1,4 +1,4 @@
-# Talk2Data — Unified Analytical Platform
+# Bolt — Unified Analytical Platform
 
 > Ask questions in plain language. Get rigorous, persona-aware insights powered by a Python execution engine, Node.js orchestrator, and React frontend — with full multilingual support for 11 languages.
 
@@ -7,7 +7,7 @@
 ## Architecture
 
 ```
-talk2data/
+Bolt/
 ├── frontend/          React 19 + Vite + i18n (11 languages) + Blind Mode
 ├── backend/           Node.js + Express — LLM orchestrator (Groq)
 └── execution_engine/  Python + FastAPI — pure-math computation engine
@@ -32,7 +32,7 @@ talk2data/
 ### 1. Clone & configure environment
 
 ```bash
-git clone <repo-url> talk2data && cd talk2data
+git clone <repo-url> Bolt && cd Bolt
 
 # Backend
 cp backend/.env.example backend/.env
@@ -79,7 +79,7 @@ scripts\start_all.bat
 
 ### 4. Open the app
 
-Navigate to **http://localhost:5173** in your browser.
+Navigate to **http://127.0.0.1:5173** in your browser.
 
 ---
 
@@ -112,16 +112,17 @@ Navigate to **http://localhost:5173** in your browser.
 ### Backend (`backend/.env`)
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `MONGODB_URI` | ✅ | MongoDB Atlas connection string |
-| `GROQ_API_KEY` | ✅ | Groq API key for LLM intent classification |
-| `PORT` | ❌ | Server port (default: `5000`) |
+| `MONGODB_URI` | Yes | MongoDB Atlas connection string |
+| `GROQ_API_KEY` | Yes | Groq API key for LLM intent classification |
+| `PORT` | No | Server port (default: `5000`) |
+| `EXECUTION_ENGINE_URL` | No | Python engine URL (default: `http://127.0.0.1:8000`) |
+| `CORS_ALLOWED_ORIGINS` | Yes in production | Comma-separated allowed frontend origins |
 
 ### Frontend (`frontend/.env`)
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `VITE_GROQ_API_KEY` | ✅ | Groq API key for Gemini intent classification |
-| `VITE_CHAT_API_URL` | ❌ | Backend URL (default: `http://localhost:5000`) |
-
+| `VITE_GROQ_API_KEY` | Yes | Groq API key for Gemini intent classification |
+| `VITE_CHAT_API_URL` | No | Backend URL (leave empty when frontend and backend share the same domain/reverse proxy) |
 ---
 
 ## Project Structure
@@ -165,13 +166,39 @@ Navigate to **http://localhost:5173** in your browser.
 
 ## Deployment Notes
 
-- **Frontend Build**: `cd frontend && npm run build` → outputs to `frontend/dist/`
+- **Frontend Build**: `cd frontend && npm run build` -> outputs to `frontend/dist/`
 - **Serve frontend**: Use any static file server (Nginx, Vercel, Netlify) for `dist/`
 - **Backend**: Deploy to any Node.js host (Railway, Render, AWS EC2)
-- **Engine**: Deploy to any Python host (Railway, Render, AWS EC2) with `uvicorn src.main:app --port 8000`
+- **Execution Engine (Python)**:
+  - Native start: `cd execution_engine && python -m uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}`
+  - Container start: `docker build -t bolt-engine ./execution_engine && docker run -p 8000:8000 --env PORT=8000 bolt-engine`
+  - Set `CORS_ALLOWED_ORIGINS` to your frontend origin(s) in production
 
 ---
+## Render Deployment
 
+- Use the repo-root `render.yaml` blueprint to create all 3 services:
+  - `Bolt-frontend` (Static Site)
+  - `Bolt-backend` (Node Web Service)
+  - `Bolt-engine` (Python Web Service)
+- Set required secret env vars in Render:
+  - Backend: `MONGODB_URI`, `GROQ_API_KEY`
+  - Frontend: `VITE_GROQ_API_KEY` (if needed in-browser)
+- URL wiring is auto-connected by blueprint:
+  - `VITE_CHAT_API_URL` -> backend URL
+  - `EXECUTION_ENGINE_URL` -> engine URL
+  - `CORS_ALLOWED_ORIGINS` -> frontend URL
+- Uploads are proxied backend -> engine, so files are saved in the engine service where compute runs.
+
+---
 ## License
 
 Internal use — NatWest Hackathon 2026.
+
+
+
+
+
+
+
+

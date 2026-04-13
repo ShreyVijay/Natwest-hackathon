@@ -26,6 +26,7 @@ import {
   saveMessage, loadHistory, startConversation, persistMessages,
   loadPersistedMessages, clearPersistedMessages,
 } from '../services/mongoService';
+import { buildApiUrl } from '../config/api';
 
 type AppView = 'booting' | 'login' | 'upload' | 'onboarding' | 'transition' | 'chat';
 
@@ -117,8 +118,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!datasetRef) return;
     const fetchSchema = async () => {
       try {
-        const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:5000';
-        const res = await fetch(`${CHAT_API_URL}/api/dataset/profile`, {
+        const res = await fetch(buildApiUrl('/api/dataset/profile'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ dataset_ref: datasetRef })
@@ -140,8 +140,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const fetchProfile = async () => {
       try {
-        const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:5000';
-        const res = await fetch(`${CHAT_API_URL}/api/users`, {
+        const res = await fetch(buildApiUrl('/api/users'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: userId }),
@@ -338,8 +337,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [userId, currentPersona, datasetRef]);
 
   // ── Login ────────────────────────────────────────────────────────
-  const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:5000';
-
   const loginUser = useCallback(async (username: string) => {
     setUserId(username);
     setUserIdState(username);
@@ -348,7 +345,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     let isNewUser = true;
     let savedPersona: Persona = 'Beginner';
     try {
-      const profileRes = await fetch(`${CHAT_API_URL}/api/users`, {
+      const profileRes = await fetch(buildApiUrl('/api/users'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),

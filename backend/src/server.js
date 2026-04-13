@@ -10,21 +10,18 @@ const chatRoutes = require('./routes/chatRoutes');
 const questionnaireRoutes = require('./routes/questionnaireRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const datasetRoutes = require('./routes/datasetRoutes');
+const { allowedOrigins } = require('./config/runtime');
 
 const app = express();
 
 // Middleware (must be registered BEFORE routes)
-// Allow any localhost port (dev) + production domains — prevents CORS errors
-// when Vite picks port 3001/3002 because 3000 is already in use.
 const CORS_OPTIONS = {
   origin: (origin, callback) => {
     // Allow requests with no origin (curl, Postman, server-to-server)
     if (!origin) return callback(null, true);
-    // Allow any localhost / 127.0.0.1 origin on any port
-    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    // Extend here for production: e.g. 'https://your-app.vercel.app'
     callback(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,
@@ -45,7 +42,7 @@ app.use('/api/dataset', datasetRoutes);
 
 // Health-check route
 app.get('/', (req, res) => {
-    res.send('Talk to Data Backend is running!');
+    res.send('Bolt Backend is running!');
 });
 
 // Connect to MongoDB, then start listening
@@ -55,3 +52,4 @@ connectDB().then(() => {
         console.log(`Server running on port ${PORT}`);
     });
 });
+

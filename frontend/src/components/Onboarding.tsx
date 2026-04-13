@@ -4,8 +4,7 @@ import { Sparkles } from 'lucide-react';
 import type { OnboardingAnswers, Persona } from '../types';
 import { getUserId } from '../services/sessionService';
 import { useTranslation } from 'react-i18next';
-
-const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:5000';
+import { buildApiUrl } from '../config/api';
 
 // ================================================================
 // ================================================================
@@ -70,7 +69,7 @@ async function fetchPersonaFromBackend(answers: Record<string, string>, datasetR
   };
 
   try {
-    const res = await fetch(`${CHAT_API_URL}/api/questionnaire`, {
+    const res = await fetch(buildApiUrl('/api/questionnaire'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
