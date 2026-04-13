@@ -1,4 +1,6 @@
 const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '');
+const ensureUrl = (value: string) =>
+  /^https?:\/\//i.test(value) ? value : `https://${value}`;
 
 const getDefaultApiBaseUrl = () => {
   if (typeof window === 'undefined') return '';
@@ -20,7 +22,7 @@ const getDefaultApiBaseUrl = () => {
 const configuredApiBase = (import.meta.env.VITE_CHAT_API_URL || '').trim();
 
 export const CHAT_API_BASE_URL = configuredApiBase
-  ? trimTrailingSlash(configuredApiBase)
+  ? trimTrailingSlash(ensureUrl(configuredApiBase))
   : getDefaultApiBaseUrl();
 
 export const buildApiUrl = (path: string) => {

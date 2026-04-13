@@ -11,7 +11,7 @@ services:
         fromService:
           type: web
           name: Bolt-frontend
-          property: url
+          property: host
 
   - type: web
     name: Bolt-backend
@@ -27,12 +27,12 @@ services:
         fromService:
           type: web
           name: Bolt-engine
-          property: url
+          property: host
       - key: CORS_ALLOWED_ORIGINS
         fromService:
           type: web
           name: Bolt-frontend
-          property: url
+          property: host
       - key: MONGODB_URI
         sync: false
       - key: GROQ_API_KEY
@@ -55,7 +55,7 @@ services:
         fromService:
           type: web
           name: Bolt-backend
-          property: url
+          property: host
       - key: VITE_GROQ_API_KEY
         sync: false
 

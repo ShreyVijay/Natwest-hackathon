@@ -1,4 +1,15 @@
-const normalizeUrl = (value, fallback) => (value || fallback).replace(/\/+$/, '');
+const ensureUrl = (value) => {
+  if (!value) return value;
+  if (/^https?:\/\//i.test(value)) return value;
+  return `https://${value}`;
+};
+
+const normalizeUrl = (value, fallback) => ensureUrl(value || fallback).replace(/\/+$/, '');
+
+const normalizeOrigin = (value) => {
+  if (!value) return value;
+  return ensureUrl(value).replace(/\/+$/, '');
+};
 
 const executionEngineUrl = normalizeUrl(
   process.env.EXECUTION_ENGINE_URL,
@@ -8,7 +19,7 @@ const executionEngineUrl = normalizeUrl(
 const getAllowedOrigins = () => {
   const configured = (process.env.CORS_ALLOWED_ORIGINS || '')
     .split(',')
-    .map((origin) => origin.trim())
+    .map((origin) => normalizeOrigin(origin.trim()))
     .filter(Boolean);
 
   if (configured.length > 0) {
