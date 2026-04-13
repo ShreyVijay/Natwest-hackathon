@@ -6,7 +6,7 @@
 import type { GeminiIntent, Persona } from '../types';
 
 const rawGroqKeys = import.meta.env.VITE_GROQ_API_KEY || '';
-const GROQ_API_KEYS = rawGroqKeys.split(',').map(k => k.trim()).filter(Boolean);
+const GROQ_API_KEYS = rawGroqKeys.split(',').map((k: string) => k.trim()).filter(Boolean);
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
 
