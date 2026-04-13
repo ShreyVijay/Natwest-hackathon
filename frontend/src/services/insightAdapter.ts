@@ -15,7 +15,11 @@
 import type { GeminiIntent, MLOutputContract, MetricPoint, ChartDataContract, Persona, SuggestedVisual, DatasetSchema } from '../types';
 import { buildApiUrl } from '../config/api';
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
+import { getApiUrl } from '../utils/apiConfig';
+
+const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:5000';
+const rawGroqKeys = import.meta.env.VITE_GROQ_API_KEY || '';
+const GROQ_API_KEYS = rawGroqKeys.split(',').map(k => k.trim()).filter(Boolean);
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
 
@@ -25,28 +29,45 @@ async function groqChat(
   userPrompt: string,
   jsonMode = false,
 ): Promise<string> {
-  const res = await fetch(GROQ_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${GROQ_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: GROQ_MODEL,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      temperature: 0.2,
-      ...(jsonMode ? { response_format: { type: 'json_object' } } : {}),
-    }),
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Groq API ${res.status}: ${err}`);
+  if (GROQ_API_KEYS.length === 0) throw new Error("No Groq API keys provided.");
+  let lastError: any = null;
+
+  for (const key of GROQ_API_KEYS) {
+    try {
+      const res = await fetch(GROQ_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${key}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: GROQ_MODEL,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+          temperature: 0.2,
+          ...(jsonMode ? { response_format: { type: 'json_object' } } : {}),
+        }),
+      });
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          throw new Error('Rate Limited (429)');
+        }
+        const err = await res.text();
+        throw new Error(`Groq API ${res.status}: ${err}`);
+      }
+      
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content?.trim() ?? '';
+    } catch (err: any) {
+      console.warn(`[Groq Frontend] Key failed: ${err.message}. Trying next key...`);
+      lastError = err;
+    }
   }
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content?.trim() ?? '';
+
+  throw new Error(`All available GROQ API keys failed. Last error: ${lastError?.message || 'Unknown'}`);
 }
 
 // ================================================================
@@ -83,7 +104,7 @@ export async function getInsightResponse(
   ml = applyPersonaRules(ml, intent, persona);
 
   // Optionally enrich summary_levels with Groq (non-blocking)
-  if (GROQ_API_KEY) {
+  if (GROQ_API_KEYS.length > 0) {
     try {
       ml = await enrichWithGroq(ml, query, persona, language);
     } catch {

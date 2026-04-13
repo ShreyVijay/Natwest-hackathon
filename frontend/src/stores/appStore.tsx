@@ -16,6 +16,7 @@ import type {
   Persona, ChatMessage, OnboardingAnswers, MLOutputContract, DatasetSchema
 } from '../types';
 import { buildResponseFromInsight, reRenderWithPersona } from '../utils/responseMapper';
+import { getApiUrl } from '../utils/apiConfig';
 import {
   getUserId, getConversationId, getSessionId,
   newMessageId,
