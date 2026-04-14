@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timezone
 
 import uvicorn
 from fastapi import FastAPI
@@ -58,7 +59,11 @@ def home():
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {
+        "service": "execution_engine",
+        "status": "ok",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 if __name__ == "__main__":

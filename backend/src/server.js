@@ -80,9 +80,17 @@ app.use('/api/questionnaire', questionnaireRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/dataset', datasetRoutes);
 
-// Health-check route
+// Health-check routes
 app.get('/', (req, res) => {
     res.send('Bolt Backend is running!');
+});
+
+app.get('/health', (req, res) => {
+    res.json({
+        service: 'backend',
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+    });
 });
 
 // Connect to MongoDB, then start listening
