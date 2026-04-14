@@ -1,12 +1,16 @@
 const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '');
-const ensureUrl = (value: string) =>
-  /^https?:\/\//i.test(value) ? value : `https://${value}`;
+const ensureUrl = (value: string) => {
+  if (/^https?:\/\//i.test(value)) return value;
+  if (/^(localhost|127\.0\.0\.1|\[::1\]|::1)(:\d+)?$/i.test(value)) return `http://${value}`;
+  return `https://${value}`;
+};
 
 const getDefaultApiBaseUrl = () => {
   if (typeof window === 'undefined') return '';
 
   const host = window.location.hostname;
   const isLoopback =
+    host === 'localhost' ||
     host === '127.0.0.1' ||
     host === '[::1]' ||
     host === '::1';
@@ -16,7 +20,7 @@ const getDefaultApiBaseUrl = () => {
     return '';
   }
 
-  return `${window.location.protocol}//127.0.0.1:5000`;
+  return `${window.location.protocol}//localhost:5000`;
 };
 
 const configuredApiBase = (import.meta.env.VITE_CHAT_API_URL || '').trim();

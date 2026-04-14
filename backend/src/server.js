@@ -14,12 +14,31 @@ const { allowedOrigins } = require('./config/runtime');
 
 const app = express();
 
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+
+  try {
+    const { hostname, protocol } = new URL(origin);
+    const isLocalProtocol = protocol === 'http:' || protocol === 'https:';
+    const isLocalHost =
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '[::1]' ||
+      hostname === '::1';
+
+    return isLocalProtocol && isLocalHost;
+  } catch {
+    return false;
+  }
+};
+
 // Middleware (must be registered BEFORE routes)
 const CORS_OPTIONS = {
   origin: (origin, callback) => {
     // Allow requests with no origin (curl, Postman, server-to-server)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
     callback(new Error(`CORS: origin ${origin} not allowed`));
@@ -28,6 +47,27 @@ const CORS_OPTIONS = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (isAllowedOrigin(origin)) {
+    if (origin) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Vary', 'Origin');
+    }
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
+  }
+
+  return next();
+});
+
 app.use(cors(CORS_OPTIONS));
 
 app.use(express.json());

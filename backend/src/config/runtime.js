@@ -1,6 +1,7 @@
 const ensureUrl = (value) => {
   if (!value) return value;
   if (/^https?:\/\//i.test(value)) return value;
+  if (/^(localhost|127\.0\.0\.1|\[::1\]|::1)(:\d+)?$/i.test(value)) return `http://${value}`;
   return `https://${value}`;
 };
 
@@ -29,7 +30,12 @@ const getAllowedOrigins = () => {
   // Default dev origins for local runs. In production, set CORS_ALLOWED_ORIGINS.
   return process.env.NODE_ENV === 'production'
     ? []
-    : ['http://127.0.0.1:5173', 'http://127.0.0.1:3000'];
+    : [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+      ];
 };
 
 module.exports = {

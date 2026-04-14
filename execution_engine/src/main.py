@@ -12,6 +12,8 @@ def _normalize_origin(value: str) -> str:
     value = value.strip()
     if value.startswith(("http://", "https://")):
         return value.rstrip("/")
+    if value.startswith(("localhost", "127.0.0.1", "[::1]", "::1")):
+        return f"http://{value}".rstrip("/")
     return f"https://{value}".rstrip("/")
 
 
@@ -24,7 +26,12 @@ def _parse_cors_origins() -> list[str]:
     if raw:
         return [_normalize_origin(origin) for origin in raw.split(",") if origin.strip()]
     # Safe local defaults. Set CORS_ALLOWED_ORIGINS explicitly in production.
-    return ["http://127.0.0.1:5173", "http://127.0.0.1:3000"]
+    return [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
 
 
 app = FastAPI(

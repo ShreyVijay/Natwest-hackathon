@@ -1,30 +1,21 @@
 import React, { useState } from 'react';
-import type { RenderedResponse, ResponseBlock, Persona } from '../../types';
-import { ConfidenceBadge } from './ConfidenceBadge';
-import { ChartRenderer } from './ChartRenderer';
-import { EvidenceDrawer } from './EvidenceDrawer';
-import { ArrowRight, Volume2, HelpCircle, X, AlertCircle, TrendingUp } from 'lucide-react';
-import { useAppContext } from '../../stores/appStore';
-import { simplifyBlock, type SimplifyContext } from '../../services/geminiService';
-import { trackEvent } from '../../services/feedbackService';
+import { AlertCircle, ArrowRight, HelpCircle, TrendingUp, Volume2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-// ================================================================
-// CONFUSION BUTTON LABELS PER PERSONA
-// ================================================================
+import { trackEvent } from '../../services/feedbackService';
+import { simplifyBlock, type SimplifyContext } from '../../services/geminiService';
+import { useAppContext } from '../../stores/appStore';
+import type { Persona, RenderedResponse, ResponseBlock } from '../../types';
+import { ChartRenderer } from './ChartRenderer';
+import { ConfidenceBadge } from './ConfidenceBadge';
 
 const CONFUSION_LABEL_KEYS: Record<Persona, string> = {
-  Beginner:   'response.help',
-  Everyday:   'response.explain',
-  SME:        'response.detail',
-  Executive:  'response.soWhat',
-  Analyst:    'response.methodology',
+  Beginner: 'response.help',
+  Everyday: 'response.explain',
+  SME: 'response.detail',
+  Executive: 'response.soWhat',
+  Analyst: 'response.methodology',
   Compliance: 'response.auditNote',
 };
-
-// ================================================================
-// BLOCK WITH CONFUSION BUTTON
-// ================================================================
 
 const BlockWithConfusion: React.FC<{
   block: ResponseBlock;
@@ -39,10 +30,15 @@ const BlockWithConfusion: React.FC<{
 
   const handleToggle = async () => {
     if (!showSimplified && !dynamicExplanation) {
-      if (currentPersona === 'Analyst') trackEvent('methodology_clicked');
-      else trackEvent('confusion_clicked');
+      if (currentPersona === 'Analyst') {
+        trackEvent('methodology_clicked');
+      } else {
+        trackEvent('confusion_clicked');
+      }
+
       setShowSimplified(true);
       setIsLoading(true);
+
       try {
         const text = await simplifyBlock(block.content, block.type, currentPersona, context);
         setDynamicExplanation(text);
@@ -61,34 +57,30 @@ const BlockWithConfusion: React.FC<{
   return (
     <div className="response-block relative group">
       {children}
-      <button
-        onClick={handleToggle}
-        className="confusion-btn mt-2 flex items-center gap-1"
-        title={t('response.help')}
-      >
+      <button onClick={handleToggle} className="confusion-btn mt-2 flex items-center gap-1" title={t('response.help')}>
         {showSimplified ? <X size={11} /> : <HelpCircle size={11} />}
         {showSimplified ? t('response.hideExplanation') : btnLabel}
       </button>
 
       <div
         className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          showSimplified ? 'max-h-56 opacity-100 mt-3' : 'max-h-0 opacity-0'
+          showSimplified ? 'mt-3 max-h-56 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="glass-card-low p-3 text-sm text-blue-700 leading-relaxed bg-blue-50/50">
+        <div className="rounded-[1rem] border border-cyan-400/15 bg-cyan-500/10 p-2.5 text-[13px] leading-relaxed text-cyan-100">
           {isLoading ? (
             <div className="flex items-center gap-2">
-              {[0, 150, 300].map(d => (
+              {[0, 150, 300].map((d) => (
                 <div
                   key={d}
-                  className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"
+                  className="h-1.5 w-1.5 rounded-full bg-cyan-300 animate-pulse"
                   style={{ animationDelay: `${d}ms` }}
                 />
               ))}
-              <span className="text-slate-500 ml-2 text-xs font-medium">{t('response.simplifying')}</span>
+              <span className="ml-2 text-xs font-medium text-zinc-400">{t('response.simplifying')}</span>
             </div>
           ) : (
-            <>💡 {dynamicExplanation ?? block.simplified}</>
+            <>{dynamicExplanation ?? block.simplified}</>
           )}
         </div>
       </div>
@@ -96,46 +88,35 @@ const BlockWithConfusion: React.FC<{
   );
 };
 
-// ================================================================
-// AUDIT BANNER
-// ================================================================
-
 const AuditBanner: React.FC<{ content: string }> = ({ content }) => (
-  <div className="audit-banner">
-    <AlertCircle size={13} className="shrink-0 mt-0.5" />
+  <div className="flex items-start gap-2 rounded-[1rem] border border-amber-400/20 bg-amber-500/10 px-3 py-2.5 text-amber-100">
+    <AlertCircle size={13} className="mt-0.5 shrink-0" />
     <span className="font-mono text-xs leading-relaxed">{content}</span>
   </div>
 );
 
-// ================================================================
-// DIAGNOSTIC PILL
-// ================================================================
-
 const DiagnosticPill: React.FC<{ text: string }> = ({ text }) => (
-  <div className="flex items-start gap-2 px-3 py-2 bg-amber-50/70 border border-amber-200/60 rounded-xl text-xs text-amber-800 font-medium leading-relaxed">
-    <TrendingUp size={12} className="shrink-0 mt-0.5 text-amber-500" />
-    {text.replace(/^⚑\s*/, '')}
+  <div className="flex items-start gap-2 rounded-xl border border-amber-400/20 bg-amber-500/10 px-3 py-2 text-[11px] font-medium leading-relaxed text-amber-100">
+    <TrendingUp size={12} className="mt-0.5 shrink-0 text-amber-300" />
+    {text.replace(/^.\s*/, '')}
   </div>
 );
-
-// ================================================================
-// KPI STRIP
-// ================================================================
 
 const KpiStrip: React.FC<{ data: ResponseBlock }> = ({ data }) => {
   const metrics = data.chartData ?? [];
   if (metrics.length === 0) return null;
+
   return (
-    <div className="flex flex-wrap gap-3 py-1">
+    <div className="flex flex-wrap gap-2.5 py-1">
       {metrics.map((m, i) => (
-        <div key={i} className="glass-card-low px-4 py-2 flex flex-col gap-0.5 min-w-[140px]">
-          <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">{m.label}</span>
-          <span className="text-xl font-bold text-slate-800">
-            {m.value.toLocaleString()} <span className="text-sm font-normal text-slate-500">{m.unit}</span>
+        <div key={i} className="min-w-[128px] rounded-[1rem] border border-white/10 bg-white/[0.04] px-3 py-2.5">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{m.label}</span>
+          <span className="mt-1 block text-lg font-bold text-white">
+            {m.value.toLocaleString()} <span className="text-xs font-normal text-zinc-400">{m.unit}</span>
           </span>
           {m.delta_pct != null && (
-            <span className={`text-xs font-semibold ${m.delta_pct >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-              {m.delta_pct >= 0 ? '▲' : '▼'} {Math.abs(m.delta_pct).toFixed(1)}% vs prior
+            <span className={`text-[11px] font-semibold ${m.delta_pct >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+              {m.delta_pct >= 0 ? 'UP' : 'DOWN'} {Math.abs(m.delta_pct).toFixed(1)}% vs prior
             </span>
           )}
         </div>
@@ -144,32 +125,28 @@ const KpiStrip: React.FC<{ data: ResponseBlock }> = ({ data }) => {
   );
 };
 
-// ================================================================
-// MAIN RESPONSE CARD
-// ================================================================
-
 export interface ResponseCardProps {
   response: RenderedResponse;
   onActionClick?: (actionText: string) => void;
+  onInspect?: () => void;
+  isInspected?: boolean;
 }
 
-export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionClick }) => {
+export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionClick, onInspect, isInspected = false }) => {
   const { currentPersona, voiceMode, blindMode } = useAppContext();
   const { t } = useTranslation();
 
   const isCompliance = currentPersona === 'Compliance';
-  const isAnalyst    = currentPersona === 'Analyst';
-  const shouldExpandEvidence = isCompliance || isAnalyst;
+  const isAnalyst = currentPersona === 'Analyst';
 
-  // ── TTS ──────────────────────────────────────────────────────────
   const readAloud = () => {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
-    let fullText = response.ttsHeadline + '. ';
-    const insight = response.blocks.find(b => b.type === 'insight')?.content;
-    const action  = response.blocks.find(b => b.type === 'action')?.content;
-    if (insight) fullText += insight + '. ';
-    if (action)  fullText += 'Recommended next step: ' + action + '.';
+    let fullText = `${response.ttsHeadline}. `;
+    const insight = response.blocks.find((b) => b.type === 'insight')?.content;
+    const action = response.blocks.find((b) => b.type === 'action')?.content;
+    if (insight) fullText += `${insight}. `;
+    if (action) fullText += `Recommended next step: ${action}.`;
     const utt = new SpeechSynthesisUtterance(fullText);
     utt.rate = 0.95;
     window.speechSynthesis.speak(utt);
@@ -177,77 +154,77 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
 
   React.useEffect(() => {
     if (voiceMode || blindMode) readAloud();
-    return () => { if (voiceMode || blindMode) window.speechSynthesis.cancel(); };
+    return () => {
+      if (voiceMode || blindMode) window.speechSynthesis.cancel();
+    };
   }, []);
 
-  // ── Simplify context ──────────────────────────────────────────────
   const simplifyCtx: SimplifyContext = {
-    query:          response.ttsHeadline,
-    mainSummary:    response.ttsHeadline,
-    metrics:        response.evidence.rawValues.map(v => ({
-      label: v.label, value: v.value, prev_value: v.prev_value ?? null, unit: v.unit,
+    query: response.ttsHeadline,
+    mainSummary: response.ttsHeadline,
+    metrics: response.evidence.rawValues.map((v) => ({
+      label: v.label,
+      value: v.value,
+      prev_value: v.prev_value ?? null,
+      unit: v.unit,
     })),
-    breakdown:      response.evidence.rawValues.map(v => ({ label: v.label, value: v.value })),
-    anomalies:      response.evidence.limitations ?? [],
+    breakdown: response.evidence.rawValues.map((v) => ({ label: v.label, value: v.value })),
+    anomalies: response.evidence.limitations ?? [],
   };
 
-  // ── Extracted block groups ────────────────────────────────────────
-  const actionBlocks  = response.blocks.filter(b => b.type === 'action');
-  const diagBlocks    = response.blocks.filter(b => b.type === 'audit' && b.content.startsWith('⚑'));
-  const coreBlocks    = response.blocks.filter(b => !actionBlocks.includes(b) && !diagBlocks.includes(b));
+  const actionBlocks = response.blocks.filter((b) => b.type === 'action');
+  const diagBlocks = response.blocks.filter((b) => b.type === 'audit' && b.content.startsWith('⚑'));
+  const coreBlocks = response.blocks.filter((b) => !actionBlocks.includes(b) && !diagBlocks.includes(b));
 
   return (
-    <div className={`glass-card p-6 w-full space-y-4 stagger relative persona-card persona-${currentPersona.toLowerCase()}`}>
-
-      {/* Top-right badges */}
-      <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-        {/* Debug: Query Type Tags */}
-        <div className="flex gap-1 mr-2 no-speech">
+    <div className={`relative w-full space-y-3.5 rounded-[1.35rem] border bg-white/[0.04] p-4 persona-card persona-${currentPersona.toLowerCase()} ${
+      isInspected ? 'border-cyan-300/25 shadow-[0_0_24px_rgba(77,226,255,0.1)]' : 'border-white/10'
+    }`}>
+      <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5">
+        <div className="no-speech mr-2 flex gap-1">
           {(Array.isArray(response.queryType) ? response.queryType : []).map((qt, i) => (
-            <span key={i} className="px-1.5 py-0.5 rounded bg-slate-100 text-[10px] font-mono text-slate-500 border border-slate-200 uppercase tracking-tighter">
+            <span
+              key={i}
+              className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-tighter text-zinc-400"
+            >
               {qt}
             </span>
           ))}
         </div>
-        
-        <span className={`persona-chip persona-chip-${currentPersona.toLowerCase()}`}>
-          {response.personaLabel}
-        </span>
+
+        <span className={`persona-chip persona-chip-${currentPersona.toLowerCase()}`}>{response.personaLabel}</span>
         <ConfidenceBadge status={response.confidenceLabel} />
         <button
           onClick={readAloud}
-          className="p-1.5 rounded-full text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors shadow-sm bg-white/50"
+          className="rounded-full border border-white/10 bg-white/[0.05] p-1.5 text-zinc-400 transition-colors hover:bg-cyan-400/10 hover:text-cyan-200"
           title={t('response.readAloud')}
         >
           <Volume2 size={15} />
         </button>
+        {onInspect && (
+          <button
+            onClick={onInspect}
+            className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] transition-all ${
+              isInspected
+                ? 'border-cyan-300/25 bg-cyan-400/10 text-cyan-100'
+                : 'border-white/10 bg-white/[0.05] text-zinc-400 hover:border-cyan-300/20 hover:bg-cyan-400/10 hover:text-cyan-100'
+            }`}
+            title="Open evidence, confidence, and method details in the right panel"
+          >
+            Inspect
+          </button>
+        )}
       </div>
 
-      {/* Warning Banner (Security / System execution alerts) */}
-      {response._originalInsight?.warnings && response._originalInsight.warnings.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 space-y-1 mb-3">
-          <div className="flex items-center gap-2 text-red-700 font-bold text-sm">
-            <AlertCircle size={16} /> {t('response.systemWarnings')}
-          </div>
-          <ul className="list-disc pl-5 text-sm text-red-600 font-medium">
-            {response._originalInsight.warnings.map((w, i) => (
-              <li key={i}>{w}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Core blocks (headline, audit, chart, kpi, insight, table, secondary_chart) */}
       {coreBlocks.map((block, i) => {
-
         if (block.type === 'headline') {
           return (
             <BlockWithConfusion key={i} block={block} context={simplifyCtx}>
-              <h3 className={`font-semibold text-slate-800 leading-snug pr-32 ${
-                currentPersona === 'Beginner'  ? 'text-base'  :
-                currentPersona === 'Executive' ? 'text-xl'    :
-                'text-[17px]'
-              }`}>
+              <h3
+                className={`pr-28 font-semibold leading-snug text-white ${
+                  currentPersona === 'Beginner' ? 'text-[15px]' : currentPersona === 'Executive' ? 'text-[18px]' : 'text-[16px]'
+                }`}
+              >
                 {block.content}
               </h3>
             </BlockWithConfusion>
@@ -265,9 +242,7 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
         if (block.type === 'chart' && block.chartData && block.chartData.length > 0 && block.chartType) {
           return (
             <div className="response-block" key={i}>
-              {block.content && (
-                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">{block.content}</p>
-              )}
+              {block.content && <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{block.content}</p>}
               <ChartRenderer visual={block.chartType} data={block.chartData} />
             </div>
           );
@@ -276,7 +251,7 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
         if (block.type === 'secondary_chart' && block.chartData && block.chartData.length > 0 && block.chartType) {
           return (
             <div key={i} className="response-block secondary-visual">
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-2 font-semibold">{t('response.supportingView')}</p>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{t('response.supportingView')}</p>
               <ChartRenderer visual={block.chartType} data={block.chartData} compact />
             </div>
           );
@@ -285,9 +260,9 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
         if (block.type === 'table') {
           return (
             <div key={i} className="response-block">
-              <p className="text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wide">{t('response.exactRecordValues')}</p>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-400">{t('response.exactRecordValues')}</p>
               <ChartRenderer visual="Table" data={block.tableData ?? block.chartData ?? []} />
-              <p className="text-xs text-slate-500 mt-3 leading-relaxed">{block.content}</p>
+              <p className="mt-3 text-[11px] leading-relaxed text-zinc-400">{block.content}</p>
             </div>
           );
         }
@@ -296,16 +271,17 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
           return (
             <BlockWithConfusion key={i} block={block} context={simplifyCtx}>
               <div className="flex items-start gap-3">
-                <div className={`w-1 min-h-[20px] rounded-full shrink-0 mt-1 ${
-                  isCompliance ? 'bg-amber-400' :
-                  isAnalyst    ? 'bg-violet-400' :
-                  'bg-blue-400'
-                }`} style={{ height: 'auto' }} />
-                <p className={`leading-relaxed font-medium ${
-                  currentPersona === 'Beginner' ? 'text-sm text-slate-600' :
-                  currentPersona === 'Analyst'  ? 'text-xs text-slate-700 font-mono' :
-                  'text-sm text-slate-600'
-                }`}>
+                <div
+                  className={`mt-1 min-h-[20px] w-1 shrink-0 rounded-full ${
+                    isCompliance ? 'bg-amber-300' : isAnalyst ? 'bg-violet-300' : 'bg-cyan-300'
+                  }`}
+                  style={{ height: 'auto' }}
+                />
+                <p
+                  className={`leading-relaxed ${
+                    currentPersona === 'Analyst' ? 'font-mono text-[11px] text-zinc-300' : 'text-[13px] font-medium text-zinc-200'
+                  }`}
+                >
                   {block.content}
                 </p>
               </div>
@@ -316,20 +292,20 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
         return null;
       })}
 
-      {/* Diagnostics / Anomaly Pills */}
       {diagBlocks.length > 0 && (
         <div className="space-y-2 pt-1">
-          <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">{t('response.keyDrivers')}</p>
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{t('response.keyDrivers')}</p>
           <div className="flex flex-wrap gap-2">
-            {diagBlocks.map((b, i) => <DiagnosticPill key={i} text={b.content} />)}
+            {diagBlocks.map((b, i) => (
+              <DiagnosticPill key={i} text={b.content} />
+            ))}
           </div>
         </div>
       )}
 
-      {/* Recommended Next Steps */}
       {actionBlocks.length > 0 && (
         <div className="space-y-2 pt-1">
-          <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-3 mt-4">
+          <p className="mb-3 mt-4 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
             {t('response.recommendedNextSteps')}
           </p>
           {actionBlocks.map((block, i) => (
@@ -339,23 +315,15 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
                   trackEvent('action_followed');
                   onActionClick?.(block.content);
                 }}
-                className="flex items-center gap-2 px-4 py-2 glass-card-low text-slate-700 text-sm font-semibold hover:text-blue-600 hover:shadow-md transition-all cursor-pointer w-full text-left"
+                className="flex w-full cursor-pointer items-center gap-2 rounded-[1rem] border border-white/10 bg-white/[0.04] px-3.5 py-2 text-left text-[13px] font-semibold text-zinc-200 transition-all hover:border-cyan-300/20 hover:bg-cyan-400/8 hover:text-white"
               >
                 {block.content}
-                <ArrowRight size={14} className="text-slate-400 ml-auto shrink-0" />
+                <ArrowRight size={14} className="ml-auto shrink-0 text-zinc-500" />
               </button>
             </BlockWithConfusion>
           ))}
         </div>
       )}
-
-      {/* Evidence / Audit Drawer */}
-      <EvidenceDrawer
-        evidence={response.evidence}
-        defaultExpanded={shouldExpandEvidence}
-        isCompliance={isCompliance}
-        isAnalyst={isAnalyst}
-      />
     </div>
   );
 };

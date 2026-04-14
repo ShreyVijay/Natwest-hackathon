@@ -1,13 +1,5 @@
 const { generateExecutionPlan } = require('../services/orchestratorService');
 const axios = require('axios'); // Remember to run: npm install axios
-
-const getExecutionEngineUrl = () => {
-    // If running locally in development, forcefully fallback to localhost
-    if (process.env.NODE_ENV !== 'production' && !process.env.FORCE_PRODUCTION_URLS) {
-        return 'http://localhost:8000';
-    }
-    return process.env.EXECUTION_ENGINE_URL || 'http://localhost:8000';
-};
 const { executionEngineUrl } = require('../config/runtime');
 
 /**
