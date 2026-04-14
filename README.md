@@ -18,58 +18,86 @@
   [![Vite](https://img.shields.io/badge/Vite-8.x-646CFF.svg?logo=vite)](https://vitejs.dev/)
 </div>
 
----
+Readme updated sections · MD
+Copy
 
+---
+ 
 ## Overview
-
-Bolt is a three-tier analytical platform built for the **NatWest Hackathon 2026** by **Algo-Vengers**.
-It combines a fast conversational UI, an LLM-powered orchestration layer, and a deterministic Python execution engine so users can ask plain-language questions about structured datasets and receive answers they can actually trust.
-
-The key design principle is simple:
-
-- Use the LLM for **intent understanding**
-- Use Python for **all mathematics and data processing**
-- Use React for **clear, persona-aware, accessible presentation**
-
-This separation is what lets Bolt stay conversational **without letting the model invent numbers**.
-
+ 
+**Enterprise LLMs are great at poetry. They are terrible at math.**
+ 
+Bolt is a **deterministic data engine disguised as a conversational interface** — built for the NatWest Hackathon 2026 by **Algo-Vengers**. It solves the single most dangerous flaw in AI-powered analytics: the hallucinated number that sounds completely confident and is completely wrong.
+ 
+The architecture is deceptively simple in principle, and genuinely hard to replicate in practice:
+ 
+- **The LLM acts as a strict compiler.** It reads your plain-language question and produces a structured execution plan. Nothing more.
+- **Python handles all the math.** Aggregations, z-scores, forecasts, and comparisons are computed deterministically — never invented.
+- **React delivers the insight.** The same verified result is rendered as a persona-aware, accessible, multilingual response tailored to who is actually reading it.
+ 
+The result is a platform that gives you the conversational fluency of a modern AI assistant with the numerical integrity of a regulated data pipeline. No hallucinations. No guessing. Just clarity, absolute trust, and lightning speed.
+ 
 ---
-
+ 
 ## The Problem and Our Solution
-
-In enterprise banking and finance, **Large Language Models (LLMs) have a catastrophic flaw: they hallucinate mathematics.**
-You cannot trust a generic LLM to calculate a portfolio's 6-month forecast, identify a true statistical anomaly with a z-score, or produce an audit-safe business answer just because it sounds confident.
-
-At the same time, traditional BI platforms such as Power BI and Tableau are often too rigid for non-technical users and do not provide truly conversational, multilingual, persona-aware interaction.
-
-**Bolt solves this.**
-
-Bolt introduces a **Deterministic Decoupled Architecture**:
-
-- Groq-powered LLMs are used only to understand the user's intent, classify the task, and compile a structured execution plan.
-- The actual computation layer is fully isolated in a Python FastAPI engine running deterministic analytics with `Pandas`, `NumPy`, and supporting statistical logic.
-- The UI then renders the result as a persona-aware explanation with dynamic charts, confidence, evidence, and follow-up actions.
-
-The result is a platform that delivers:
-
-- **No hallucinated metrics**
-- **Zero math performed by the LLM**
-- **Enterprise-grade explainability**
-- **Fast conversational analytics for both technical and non-technical users**
-
+ 
+### The Problem: You Cannot Trust an LLM with a Spreadsheet
+ 
+In enterprise banking and finance, data questions have consequences. A wrong number in a portfolio forecast is not an interesting error — it is an audit failure, a compliance breach, or a bad decision made in a boardroom.
+ 
+The market currently offers two inadequate options:
+ 
+**Option 1: Generic AI chat over your data.**  
+Models like ChatGPT Advanced Data Analysis or Claude process your question and attempt to calculate the answer conceptually. They often get it wrong silently. Worse, they require uploading raw financial datasets to external APIs — a compliance nightmare for any regulated institution. And they give the same verbose, one-size-fits-all response to a first-year analyst and a Chief Risk Officer alike.
+ 
+**Option 2: Traditional BI dashboards.**  
+Power BI, Tableau — accurate, but rigid. They require technical configuration, offer no conversational interface, and cannot adapt their outputs to the person asking. Time-to-insight is measured in hours, not seconds.
+ 
+### Our Solution: Deterministic Decoupled Architecture
+ 
+Bolt introduces a fundamentally different trust model.
+ 
+The LLM never touches the math. Ever.
+ 
+When a user submits a question, Groq generates a strict **JSON execution plan** — a compiler output, not an answer. That plan is forwarded to an isolated Python engine running on Pandas and NumPy. The engine executes the computation, returns a verified result contract, and only then does any language model re-enter the picture — purely to translate hard numbers into human-readable narrative.
+ 
+This is the difference between an AI that *performs* confidence and a platform that *earns* it.
+ 
+**What this means in practice:**
+ 
+- Raw data never leaves the secure execution environment. Only column names and aggregated results are ever exposed to the LLM layer — a fundamental data privacy guarantee that generic AI tools cannot match.
+- Every calculation is deterministic by default. Run the same query twice and you get the same answer, with a traceable audit trail.
+- The system adapts its output to the person reading it — a beginner gets a plain-English summary, an auditor gets exact values, filters, formulas, timestamps, and source references.
+- Switching personas costs zero tokens and zero recomputation. The verified result is stored client-side and re-rendered locally.
+ 
 ---
-
+ 
 ## Why Bolt Matters
-
-Bolt is not just a chat UI over a CSV.
-It is a deliberate trust architecture for enterprise analytics:
-
-- **The LLM handles the "What"**: what is the user asking for?
-- **The engine handles the "Math"**: aggregations, z-scores, forecasting, and comparisons are computed deterministically.
-- **The frontend handles the "How"**: the same result can be re-rendered for a Beginner, Executive, Analyst, or Compliance persona without re-spending tokens or recomputing the query.
-
-That is the difference between a flashy prototype and a trustworthy analytical platform.
-
+ 
+Most AI analytics tools are built around a dangerous assumption: that making an LLM *sound* rigorous is equivalent to making it *be* rigorous.
+ 
+Bolt rejects that assumption entirely.
+ 
+### Trust Over Theatrics
+ 
+The architecture is designed around a single question: *what does a financial institution actually need to trust an answer?*
+ 
+- **Traceable computation.** Every result comes with the formula, the filters, the raw values, and the method used to produce it. An auditor can inspect any response and understand exactly how the number was derived.
+- **Read-only by design.** The execution engine architecture explicitly blocks state-changing operations at the infrastructure level. No LLM prompt injection can trigger a destructive database command — because the engine only accepts read operations.
+- **Privacy by construction.** The data pipeline is isolated. Your 500,000-row transaction ledger never enters a third-party LLM context window. Only the schema and query metadata do.
+ 
+### Inclusive by Default
+ 
+Bolt was built for everyone in the organisation, not just the data team.
+ 
+A CEO asking "what drove the revenue dip in Q3?" gets a two-sentence headline and a clean visual. A compliance officer asking the same question gets a full evidence panel: confidence score, source reference, applied filters, formula logic, and a list of known limitations. A non-English speaker gets the same insight in Hindi, Arabic, Mandarin, or eight other languages — with RTL layout support where needed. A visually impaired user can activate Blind Mode with a five-second Spacebar hold and navigate the entire platform by voice.
+ 
+The same verified answer. Adapted for every person reading it.
+ 
+### Speed That Changes Behaviour
+ 
+Legacy dashboards make insight feel expensive. When querying a report takes fifteen minutes of configuration, people stop asking questions. Bolt makes analytics conversational — fast enough that asking a follow-up question is as natural as a spoken exchange. That behavioural shift, from periodic reporting to continuous analytical dialogue, is the compounding advantage.
+ 
 ---
 
 ## Comprehensive Feature Set
@@ -749,14 +777,25 @@ Bolt already proves the core trust architecture, but there is clear room to take
 ---
 
 ## Business Impact for NatWest
-
-Bolt is not just a technical prototype; it addresses real enterprise pain points:
-
-1. **Immediate Productivity:** Reduces time-to-insight from hours of analyst preparation to seconds of conversational interaction.
-2. **Defensible Accuracy:** Keeps all mathematics inside a deterministic execution layer so important business reporting is not distorted by LLM hallucinations.
-3. **Inclusive Analytics:** Adapts to the user, whether they are visually impaired, working in Arabic, non-technical, or deeply analytical.
-4. **Better Decision Surfaces:** Gives executives concise answers, analysts detailed evidence, and compliance teams auditable outputs from the same underlying truth.
-
+ 
+Bolt was built to address three of the most persistent pain points in enterprise financial analytics — and to do it in a way that is auditable, inclusive, and immediately deployable.
+ 
+### 1. Accuracy You Can Put in a Report
+ 
+Every bank operates under the assumption that data presented to leadership or regulators is correct. Bolt enforces that assumption at the architecture level. Because all mathematics runs in a deterministic Python engine — never inside an LLM — the outputs are reproducible, traceable, and audit-safe. The Evidence Panel on every response gives compliance teams exactly what they need: the original query, the method, the filters, the formula, the raw values, and a confidence classification. This is not a feature — it is a governance capability.
+ 
+### 2. Analyst Productivity Without Analyst Dependency
+ 
+Currently, non-technical business users either wait for an analyst to build a report or try to interpret a BI dashboard they were not trained on. Bolt eliminates that bottleneck. A relationship manager, a branch lead, or a risk committee member can ask a plain-language question and receive a rigorous, verified answer in seconds — without submitting a ticket, waiting for a refresh, or learning a query language. That frees analytical capacity for the work that actually requires it.
+ 
+### 3. Compliance and Data Sovereignty, Baked In
+ 
+Sending financial data to a third-party LLM API is not a grey area for a regulated bank — it is a breach waiting to happen. Bolt's architecture never exposes raw data to any external model. The LLM layer receives only column names and aggregated schema context. The raw records stay inside the secure execution environment. For an institution operating under FCA oversight, that privacy-by-construction model is not a nice-to-have — it is a prerequisite for deployment.
+ 
+### 4. One Platform, Every Stakeholder
+ 
+Bolt's persona engine means a single analytical platform can serve the entire organisation without fragmentation. The same underlying data pipeline produces a concise executive summary for the C-suite, a detailed analytical breakdown for the data team, and a source-backed compliance report for the audit function — all from the same query, with no additional processing cost. That organisational coherence, across technical and non-technical users, in eleven languages, with full accessibility support, is what separates Bolt from both generic AI tools and traditional BI platforms.
+ 
 ---
 
 ## License
