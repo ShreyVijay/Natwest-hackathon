@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const { executionEngineUrl } = require('../config/runtime');
+const { engineRequest } = require('../utils/engineClient');
 
 const router = express.Router();
 
@@ -27,18 +27,10 @@ router.post('/', upload.single('file'), async (req, res) => {
             safeName,
         );
 
-        const engineRes = await fetch(`${executionEngineUrl}/upload_dataset`, {
+        const { data: payload } = await engineRequest('/upload_dataset', {
             method: 'POST',
             body: form,
         });
-
-        const payload = await engineRes.json().catch(() => ({}));
-        if (!engineRes.ok) {
-            return res.status(502).json({
-                message: 'Execution Engine rejected file upload',
-                details: payload?.detail || payload?.message || `HTTP ${engineRes.status}`,
-            });
-        }
 
         return res.status(200).json({
             message: 'File uploaded successfully',
@@ -48,7 +40,10 @@ router.post('/', upload.single('file'), async (req, res) => {
         });
     } catch (error) {
         console.error('Upload Error:', error);
-        res.status(500).json({ message: 'Server Error processing upload', error: error.message });
+        res.status(503).json({
+            message: 'Execution engine is still waking up. Please retry the upload in a few seconds.',
+            error: error.details || error.message,
+        });
     }
 });
 

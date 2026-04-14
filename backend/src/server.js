@@ -11,6 +11,7 @@ const questionnaireRoutes = require('./routes/questionnaireRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const datasetRoutes = require('./routes/datasetRoutes');
 const { allowedOrigins } = require('./config/runtime');
+const { waitForEngineReady } = require('./utils/engineClient');
 
 const app = express();
 
@@ -91,6 +92,26 @@ app.get('/health', (req, res) => {
         status: 'ok',
         timestamp: new Date().toISOString(),
     });
+});
+
+app.get('/health/ready', async (req, res) => {
+    try {
+        await waitForEngineReady();
+        res.json({
+            service: 'backend',
+            status: 'ready',
+            engine: 'ready',
+            timestamp: new Date().toISOString(),
+        });
+    } catch (error) {
+        res.status(503).json({
+            service: 'backend',
+            status: 'warming',
+            engine: 'warming',
+            message: error.details || error.message,
+            timestamp: new Date().toISOString(),
+        });
+    }
 });
 
 // Connect to MongoDB, then start listening

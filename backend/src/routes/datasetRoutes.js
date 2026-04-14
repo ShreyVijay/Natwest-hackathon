@@ -1,6 +1,5 @@
 const express = require('express');
-const axios = require('axios');
-const { executionEngineUrl } = require('../config/runtime');
+const { engineJsonRequest } = require('../utils/engineClient');
 const router = express.Router();
 
 // @route   POST /api/dataset/profile
@@ -12,16 +11,20 @@ router.post('/profile', async (req, res) => {
             return res.status(400).json({ error: 'dataset_ref is required' });
         }
 
-        const pythonRes = await axios.post(`${executionEngineUrl}/analyze_schema`, {
-            dataset_ref
+        const { data } = await engineJsonRequest('/analyze_schema', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ dataset_ref }),
         });
 
-        res.status(200).json(pythonRes.data);
+        res.status(200).json(data);
     } catch (error) {
-        console.error('Dataset Profile Proxy Error:', error.response?.data || error.message);
-        res.status(500).json({
+        console.error('Dataset Profile Proxy Error:', error.details || error.message);
+        res.status(error.status === 400 ? 400 : 503).json({
             error: 'Failed to profile dataset',
-            details: error.response?.data || error.message
+            details: error.details || error.message
         });
     }
 });

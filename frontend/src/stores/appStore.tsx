@@ -169,7 +169,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const runWarmup = useCallback(async () => {
-    const backendHealthUrl = buildApiUrl('/health');
+    const backendHealthUrl = buildApiUrl('/health/ready');
     const engineHealthUrl = buildEngineUrl('/health');
 
     setAppView('booting');
