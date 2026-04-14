@@ -38,37 +38,37 @@ export const ChatInspectorPanel: React.FC<ChatInspectorPanelProps> = ({
     'None';
 
   return (
-    <aside className="flex h-full min-w-[300px] flex-col border-l border-cyan-300/8 bg-[linear-gradient(180deg,rgba(8,11,18,0.98),rgba(4,6,11,0.98))]">
-      <div className="border-b border-white/6 px-4 py-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-600">Evidence Panel</p>
-        <h3 className="mt-1 text-lg font-semibold text-white">Response Details</h3>
-        <p className="mt-1 text-[12px] leading-relaxed text-zinc-500">
+    <aside className="flex h-full min-h-0 min-w-[272px] flex-col border-l border-cyan-300/8 bg-[linear-gradient(180deg,rgba(8,11,18,0.98),rgba(4,6,11,0.98))]">
+      <div className="border-b border-white/6 px-3.5 py-2.5">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-zinc-600">Evidence Panel</p>
+        <h3 className="mt-1 text-[0.95rem] font-semibold text-white">Response Details</h3>
+        <p className="mt-1 text-[11px] leading-relaxed text-zinc-500">
           Open a response from the middle column to inspect the dataset context, method, confidence, and metadata.
         </p>
       </div>
 
-      <div className="custom-scrollbar flex-1 overflow-y-auto px-4 py-4">
+      <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-3.5 py-2.5">
         {!selectedMessage || !response || !evidence ? (
-          <div className="flex h-full min-h-[280px] items-center justify-center">
+          <div className="flex h-full min-h-[240px] items-center justify-center">
             <section className="flex max-w-[250px] flex-col items-center justify-center text-center">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[1.1rem] border border-white/8 bg-white/[0.03]">
-                <FlaskConical className="h-6 w-6 text-violet-300/80" />
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-[1rem] border border-white/8 bg-white/[0.03]">
+                <FlaskConical className="h-5 w-5 text-violet-300/80" />
               </div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-600">No Response Selected</p>
-              <p className="mt-3 text-[13px] leading-relaxed text-zinc-500">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-600">No Response Selected</p>
+              <p className="mt-2.5 text-[12px] leading-relaxed text-zinc-500">
                 Choose <span className="text-white">Inspect</span> on any Bolt response to open the method, evidence, and metadata here.
               </p>
             </section>
           </div>
         ) : (
           <>
-            <section className="glass-card-low mb-4 rounded-[1.1rem] border border-cyan-300/8 p-4">
-              <div className="mb-3 flex items-center gap-2">
+            <section className="glass-card-low mb-2.5 rounded-[0.9rem] border border-cyan-300/8 p-2.5">
+              <div className="mb-2.5 flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4 text-cyan-300" />
-                <h4 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Dataset</h4>
+                <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Dataset</h4>
               </div>
 
-              <div className="space-y-3 text-[12px] text-zinc-300">
+              <div className="space-y-2.5 text-[11px] text-zinc-300">
                 <div>
                   <p className="mb-1 text-zinc-500">Working CSV / Dataset Ref</p>
                   <p className="break-all font-mono text-[11px] text-cyan-100">{datasetRef || 'No dataset selected'}</p>
@@ -104,13 +104,13 @@ export const ChatInspectorPanel: React.FC<ChatInspectorPanelProps> = ({
               </div>
             </section>
 
-            <section className="glass-card-low mb-4 rounded-[1.1rem] border border-violet-400/10 p-4">
-              <div className="mb-3 flex items-center gap-2">
+            <section className="glass-card-low mb-2.5 rounded-[0.9rem] border border-violet-400/10 p-2.5">
+              <div className="mb-2.5 flex items-center gap-2">
                 <Binary className="h-4 w-4 text-violet-300" />
-                <h4 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Method</h4>
+                <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Method</h4>
               </div>
 
-              <div className="space-y-3 text-[12px] text-zinc-300">
+              <div className="space-y-2.5 text-[11px] text-zinc-300">
                 <div>
                   <p className="mb-1 text-zinc-500">Query</p>
                   <p className="leading-relaxed text-white">{selectedMessage.rawQuery || selectedMessage.text || 'No query text'}</p>
@@ -143,13 +143,13 @@ export const ChatInspectorPanel: React.FC<ChatInspectorPanelProps> = ({
               </div>
             </section>
 
-            <section className="glass-card-low mb-4 rounded-[1.1rem] border border-white/10 p-4">
-              <div className="mb-3 flex items-center gap-2">
+            <section className="glass-card-low mb-2.5 rounded-[0.9rem] border border-white/10 p-2.5">
+              <div className="mb-2.5 flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-emerald-300" />
-                <h4 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Evidence</h4>
+                <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Evidence</h4>
               </div>
 
-              <div className="space-y-3 text-[12px] text-zinc-300">
+              <div className="space-y-2.5 text-[11px] text-zinc-300">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <p className="mb-1 text-zinc-500">Confidence</p>
@@ -176,7 +176,7 @@ export const ChatInspectorPanel: React.FC<ChatInspectorPanelProps> = ({
                       <p className="mb-1 flex items-center gap-1 text-zinc-500">
                       <Filter className="h-3.5 w-3.5" /> Active Filters
                     </p>
-                    <code className="block rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-[11px] leading-relaxed text-cyan-100">
+                    <code className="block rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-[10px] leading-relaxed text-cyan-100">
                       {evidence.filters}
                     </code>
                   </div>
@@ -185,7 +185,7 @@ export const ChatInspectorPanel: React.FC<ChatInspectorPanelProps> = ({
                 {evidence.formula && (
                   <div>
                     <p className="mb-1 text-zinc-500">Formula / Calculation</p>
-                    <code className="block rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-[11px] leading-relaxed text-violet-100">
+                    <code className="block rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-[10px] leading-relaxed text-violet-100">
                       {evidence.formula}
                     </code>
                   </div>
@@ -193,26 +193,26 @@ export const ChatInspectorPanel: React.FC<ChatInspectorPanelProps> = ({
               </div>
             </section>
 
-            <section className="glass-card-low mb-4 rounded-[1.1rem] border border-white/10 p-4">
-              <div className="mb-3 flex items-center gap-2">
+            <section className="glass-card-low mb-2.5 rounded-[0.9rem] border border-white/10 p-2.5">
+              <div className="mb-2.5 flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-cyan-300" />
-                <h4 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Raw Values</h4>
+                <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Raw Values</h4>
               </div>
 
               {evidence.rawValues.length > 0 ? (
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {evidence.rawValues.slice(0, 8).map((metric) => (
                     <div
                       key={`${metric.label}-${metric.value}`}
                       className="flex items-center justify-between rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2"
                     >
                       <div className="min-w-0 pr-3">
-                        <p className="truncate text-[12px] font-medium text-white">{metric.label}</p>
+                        <p className="truncate text-[11px] font-medium text-white">{metric.label}</p>
                         {metric.prev_value != null && (
                           <p className="text-[10px] text-zinc-500">Baseline: {metric.prev_value.toLocaleString()}</p>
                         )}
                       </div>
-                      <p className="shrink-0 text-[12px] font-semibold text-cyan-100">{metricValue(metric)}</p>
+                      <p className="shrink-0 text-[11px] font-semibold text-cyan-100">{metricValue(metric)}</p>
                     </div>
                   ))}
                 </div>
@@ -221,14 +221,14 @@ export const ChatInspectorPanel: React.FC<ChatInspectorPanelProps> = ({
               )}
             </section>
 
-            <section className="glass-card-low rounded-[1.1rem] border border-white/10 p-4">
-              <div className="mb-3 flex items-center gap-2">
+            <section className="glass-card-low rounded-[0.9rem] border border-white/10 p-2.5">
+              <div className="mb-2.5 flex items-center gap-2">
                 <Layers3 className="h-4 w-4 text-amber-300" />
-                <h4 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Limitations</h4>
+                <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Limitations</h4>
               </div>
 
               {evidence.limitations && evidence.limitations.length > 0 ? (
-                <ul className="space-y-2 text-[12px] text-amber-100">
+                <ul className="space-y-1.5 text-[11px] text-amber-100">
                   {evidence.limitations.map((limitation) => (
                     <li
                       key={limitation}
@@ -246,8 +246,8 @@ export const ChatInspectorPanel: React.FC<ChatInspectorPanelProps> = ({
         )}
       </div>
 
-      <div className="border-t border-white/6 px-4 py-3">
-        <div className="flex items-center gap-2 text-[11px] text-zinc-500">
+      <div className="border-t border-white/6 px-3.5 py-2.5">
+        <div className="flex items-center gap-2 text-[10px] text-zinc-500">
           <Database className="h-3.5 w-3.5 text-cyan-300" />
           Right panel updates only when you explicitly inspect a response.
         </div>

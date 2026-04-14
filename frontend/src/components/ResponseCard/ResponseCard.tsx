@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertCircle, ArrowRight, HelpCircle, TrendingUp, Volume2, X } from 'lucide-react';
+import { AlertCircle, ArrowRight, HelpCircle, Sparkles, TrendingUp, Volume2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { trackEvent } from '../../services/feedbackService';
 import { simplifyBlock, type SimplifyContext } from '../../services/geminiService';
@@ -177,57 +177,73 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
   const coreBlocks = response.blocks.filter((b) => !actionBlocks.includes(b) && !diagBlocks.includes(b));
 
   return (
-    <div className={`relative w-full space-y-3.5 rounded-[1.35rem] border bg-white/[0.04] p-4 persona-card persona-${currentPersona.toLowerCase()} ${
+    <div className={`response-card-shell relative w-full space-y-3 rounded-[1.1rem] border bg-white/[0.04] p-3 persona-card persona-${currentPersona.toLowerCase()} ${
       isInspected ? 'border-cyan-300/25 shadow-[0_0_24px_rgba(77,226,255,0.1)]' : 'border-white/10'
     }`}>
-      <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5">
-        <div className="no-speech mr-2 flex gap-1">
-          {(Array.isArray(response.queryType) ? response.queryType : []).map((qt, i) => (
-            <span
-              key={i}
-              className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-tighter text-zinc-400"
-            >
-              {qt}
-            </span>
-          ))}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-24 rounded-t-[1.1rem] bg-[radial-gradient(circle_at_top_left,rgba(77,226,255,0.12),transparent_34%),radial-gradient(circle_at_top_right,rgba(180,108,255,0.16),transparent_36%)] opacity-90" />
+
+      <div className="relative z-10 flex flex-col gap-2 rounded-[0.95rem] border border-white/6 bg-black/18 p-2.5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="mb-1 flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+              <Sparkles size={10} className="text-cyan-300" />
+              Bolt Response
+            </p>
+            <div className="no-speech flex flex-wrap gap-1">
+              {(Array.isArray(response.queryType) ? response.queryType : []).map((qt, i) => (
+                <span
+                  key={i}
+                  className="rounded-full border border-white/8 bg-white/[0.04] px-2 py-0.5 text-[8px] font-mono uppercase tracking-[0.14em] text-zinc-400"
+                >
+                  {qt}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={readAloud}
+            className="shrink-0 rounded-full border border-white/10 bg-white/[0.05] p-1.5 text-zinc-400 transition-colors hover:bg-cyan-400/10 hover:text-cyan-200"
+            title={t('response.readAloud')}
+          >
+            <Volume2 size={14} />
+          </button>
         </div>
 
-        <span className={`persona-chip persona-chip-${currentPersona.toLowerCase()}`}>{response.personaLabel}</span>
-        <ConfidenceBadge status={response.confidenceLabel} />
-        <button
-          onClick={readAloud}
-          className="rounded-full border border-white/10 bg-white/[0.05] p-1.5 text-zinc-400 transition-colors hover:bg-cyan-400/10 hover:text-cyan-200"
-          title={t('response.readAloud')}
-        >
-          <Volume2 size={15} />
-        </button>
-        {onInspect && (
-          <button
-            onClick={onInspect}
-            className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] transition-all ${
-              isInspected
-                ? 'border-cyan-300/25 bg-cyan-400/10 text-cyan-100'
-                : 'border-white/10 bg-white/[0.05] text-zinc-400 hover:border-cyan-300/20 hover:bg-cyan-400/10 hover:text-cyan-100'
-            }`}
-            title="Open evidence, confidence, and method details in the right panel"
-          >
-            Inspect
-          </button>
-        )}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className={`persona-chip persona-chip-${currentPersona.toLowerCase()}`}>{response.personaLabel}</span>
+          <ConfidenceBadge status={response.confidenceLabel} />
+          {onInspect && (
+            <button
+              onClick={onInspect}
+              className={`ml-auto rounded-full border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] transition-all ${
+                isInspected
+                  ? 'border-cyan-300/25 bg-cyan-400/10 text-cyan-100'
+                  : 'border-white/10 bg-white/[0.05] text-zinc-400 hover:border-cyan-300/20 hover:bg-cyan-400/10 hover:text-cyan-100'
+              }`}
+              title="Open evidence, confidence, and method details in the right panel"
+            >
+              Open Details
+            </button>
+          )}
+        </div>
       </div>
 
       {coreBlocks.map((block, i) => {
         if (block.type === 'headline') {
           return (
-            <BlockWithConfusion key={i} block={block} context={simplifyCtx}>
-              <h3
-                className={`pr-28 font-semibold leading-snug text-white ${
-                  currentPersona === 'Beginner' ? 'text-[15px]' : currentPersona === 'Executive' ? 'text-[18px]' : 'text-[16px]'
-                }`}
-              >
-                {block.content}
-              </h3>
-            </BlockWithConfusion>
+            <section key={i} className="response-primary-zone rounded-[1rem] border border-white/6 px-3 py-3">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-200/75">Primary Insight</p>
+              <BlockWithConfusion block={block} context={simplifyCtx}>
+                <h3
+                  className={`response-headline font-semibold leading-snug text-white ${
+                    currentPersona === 'Beginner' ? 'text-[14px]' : currentPersona === 'Executive' ? 'text-[16px]' : 'text-[15px]'
+                  }`}
+                >
+                  {block.content}
+                </h3>
+              </BlockWithConfusion>
+            </section>
           );
         }
 
@@ -242,7 +258,7 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
         if (block.type === 'chart' && block.chartData && block.chartData.length > 0 && block.chartType) {
           return (
             <div className="response-block" key={i}>
-              {block.content && <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{block.content}</p>}
+              {block.content && <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{block.content}</p>}
               <ChartRenderer visual={block.chartType} data={block.chartData} />
             </div>
           );
@@ -251,7 +267,7 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
         if (block.type === 'secondary_chart' && block.chartData && block.chartData.length > 0 && block.chartType) {
           return (
             <div key={i} className="response-block secondary-visual">
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{t('response.supportingView')}</p>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{t('response.supportingView')}</p>
               <ChartRenderer visual={block.chartType} data={block.chartData} compact />
             </div>
           );
@@ -260,9 +276,9 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
         if (block.type === 'table') {
           return (
             <div key={i} className="response-block">
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-400">{t('response.exactRecordValues')}</p>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">{t('response.exactRecordValues')}</p>
               <ChartRenderer visual="Table" data={block.tableData ?? block.chartData ?? []} />
-              <p className="mt-3 text-[11px] leading-relaxed text-zinc-400">{block.content}</p>
+              <p className="mt-2 text-[10px] leading-relaxed text-zinc-400">{block.content}</p>
             </div>
           );
         }
@@ -270,16 +286,16 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
         if (block.type === 'insight') {
           return (
             <BlockWithConfusion key={i} block={block} context={simplifyCtx}>
-              <div className="flex items-start gap-3">
+              <div className="response-insight-block flex items-start gap-3 rounded-[1rem] border border-white/6 px-3 py-3">
                 <div
-                  className={`mt-1 min-h-[20px] w-1 shrink-0 rounded-full ${
+                  className={`mt-1 min-h-[18px] w-1 shrink-0 rounded-full ${
                     isCompliance ? 'bg-amber-300' : isAnalyst ? 'bg-violet-300' : 'bg-cyan-300'
                   }`}
                   style={{ height: 'auto' }}
                 />
                 <p
-                  className={`leading-relaxed ${
-                    currentPersona === 'Analyst' ? 'font-mono text-[11px] text-zinc-300' : 'text-[13px] font-medium text-zinc-200'
+                  className={`response-insight-copy leading-relaxed ${
+                    currentPersona === 'Analyst' ? 'font-mono text-[10px] text-zinc-300' : 'text-[12px] font-medium text-zinc-200'
                   }`}
                 >
                   {block.content}
@@ -294,7 +310,7 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
 
       {diagBlocks.length > 0 && (
         <div className="space-y-2 pt-1">
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{t('response.keyDrivers')}</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{t('response.keyDrivers')}</p>
           <div className="flex flex-wrap gap-2">
             {diagBlocks.map((b, i) => (
               <DiagnosticPill key={i} text={b.content} />
@@ -304,25 +320,35 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({ response, onActionCl
       )}
 
       {actionBlocks.length > 0 && (
-        <div className="space-y-2 pt-1">
-          <p className="mb-3 mt-4 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-            {t('response.recommendedNextSteps')}
-          </p>
-          {actionBlocks.map((block, i) => (
-            <BlockWithConfusion key={i} block={block} context={simplifyCtx}>
-              <button
-                onClick={() => {
-                  trackEvent('action_followed');
-                  onActionClick?.(block.content);
-                }}
-                className="flex w-full cursor-pointer items-center gap-2 rounded-[1rem] border border-white/10 bg-white/[0.04] px-3.5 py-2 text-left text-[13px] font-semibold text-zinc-200 transition-all hover:border-cyan-300/20 hover:bg-cyan-400/8 hover:text-white"
-              >
-                {block.content}
-                <ArrowRight size={14} className="ml-auto shrink-0 text-zinc-500" />
-              </button>
-            </BlockWithConfusion>
-          ))}
-        </div>
+        <section className="response-recommendations-zone rounded-[1rem] border border-violet-400/10 px-3 py-3">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-violet-200/75">Recommended Next Moves</p>
+              <p className="mt-1 text-[11px] text-zinc-500">Use these follow-ups to continue the analysis from the current answer.</p>
+            </div>
+          </div>
+          <div className="grid gap-2">
+            {actionBlocks.map((block, i) => (
+              <BlockWithConfusion key={i} block={block} context={simplifyCtx}>
+                <button
+                  onClick={() => {
+                    trackEvent('action_followed');
+                    onActionClick?.(block.content);
+                  }}
+                  className="response-action-card flex w-full cursor-pointer items-start gap-3 rounded-[1rem] border px-3 py-3 text-left transition-all"
+                >
+                  <div className="response-action-icon mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full">
+                    <ArrowRight size={13} className="text-cyan-100" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Follow-up Query</p>
+                    <p className="mt-1 text-[12px] font-semibold leading-relaxed text-zinc-100">{block.content}</p>
+                  </div>
+                </button>
+              </BlockWithConfusion>
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );

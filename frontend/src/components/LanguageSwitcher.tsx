@@ -50,12 +50,12 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ onLanguageCh
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-10 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-3 text-xs font-medium text-zinc-300 transition-all hover:border-violet-400/30 hover:bg-white/[0.07] hover:text-white"
+        className="flex h-9 min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 text-[11px] font-medium text-zinc-300 transition-all hover:border-violet-400/30 hover:bg-white/[0.07] hover:text-white"
         title="Switch language"
       >
         <Globe size={14} />
         <span>{currentLang.flag}</span>
-        <span className="hidden sm:inline">{currentLang.label}</span>
+        <span className="truncate">{currentLang.label}</span>
         <ChevronDown size={12} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
 

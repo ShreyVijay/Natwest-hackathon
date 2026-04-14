@@ -26,7 +26,7 @@ const AppContent: React.FC = () => {
         </div>
       )}
 
-      <div className="main-container mx-auto flex h-[calc(100vh-16px)] max-h-[940px] w-full max-w-[1600px] overflow-hidden md:h-[calc(100vh-24px)]">
+      <div className="main-container mx-auto flex h-[calc(100vh-16px)] min-h-0 max-h-[940px] w-full max-w-[1600px] overflow-hidden md:h-[calc(100vh-24px)]">
         {appView === 'booting' && (
           <div className="flex h-full w-full flex-col items-center justify-center bg-black">
             <div className="mb-4 h-16 w-16 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 shadow-[0_0_20px_rgba(168,85,247,0.35)] animate-pulse" />
