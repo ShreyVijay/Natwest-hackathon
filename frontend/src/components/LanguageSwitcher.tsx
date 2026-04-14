@@ -47,22 +47,22 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ onLanguageCh
   };
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative w-full min-w-0" ref={ref}>
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-9 min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 text-[11px] font-medium text-zinc-300 transition-all hover:border-violet-400/30 hover:bg-white/[0.07] hover:text-white"
+        className="flex h-9 w-full min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 text-[11px] font-medium text-zinc-300 transition-all hover:border-violet-400/30 hover:bg-white/[0.07] hover:text-white"
         title="Switch language"
       >
-        <Globe size={14} />
-        <span>{currentLang.flag}</span>
-        <span className="truncate">{currentLang.label}</span>
-        <ChevronDown size={12} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+        <Globe size={14} className="shrink-0" />
+        <span className="shrink-0">{currentLang.flag}</span>
+        <span className="min-w-0 flex-1 truncate text-left">{currentLang.label}</span>
+        <ChevronDown size={12} className={`shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
         <div
-          className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/95 p-2 shadow-[0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-2xl"
-          style={{ maxHeight: '320px', overflowY: 'auto' }}
+          className="custom-scrollbar absolute left-0 top-full z-50 mt-2 w-full min-w-[180px] max-w-[220px] overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950/96 p-1.5 shadow-[0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-2xl"
+          style={{ maxHeight: '260px' }}
         >
           {LANGUAGES.map((lang) => {
             const isActive = lang.code === i18n.language;
@@ -71,15 +71,15 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ onLanguageCh
               <button
                 key={lang.code}
                 onClick={() => handleSwitch(lang.code)}
-                className={`flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm transition-all ${
+                className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-[12px] transition-all ${
                   isActive
                     ? 'bg-violet-500/15 text-violet-200 shadow-[0_0_18px_rgba(168,85,247,0.18)]'
                     : 'text-zinc-300 hover:bg-white/[0.05] hover:text-white'
                 }`}
               >
-                <span className="text-xs font-semibold text-zinc-500">{lang.flag}</span>
-                <span>{lang.label}</span>
-                {isActive && <span className="ml-auto text-xs font-semibold text-violet-300">Active</span>}
+                <span className="shrink-0 text-[10px] font-semibold text-zinc-500">{lang.flag}</span>
+                <span className="min-w-0 flex-1 truncate">{lang.label}</span>
+                {isActive && <span className="ml-auto shrink-0 text-[10px] font-semibold text-violet-300">Active</span>}
               </button>
             );
           })}

@@ -151,8 +151,8 @@ export const Onboarding: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full w-full items-center justify-center overflow-y-auto bg-black px-4 py-8 custom-scrollbar md:px-8">
-      <div className="w-full max-w-3xl overflow-hidden rounded-[1.6rem] border border-cyan-300/8 bg-white/[0.03] shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+    <div className="flex h-full w-full items-center justify-center overflow-y-auto bg-black px-4 py-6 custom-scrollbar md:px-6">
+      <div className="w-full max-w-2xl overflow-hidden rounded-[1.25rem] border border-cyan-300/8 bg-white/[0.03] shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
         <div className="h-1 w-full bg-white/[0.05]">
           <div
             className="h-full bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500 transition-all duration-700 ease-out"
@@ -160,18 +160,18 @@ export const Onboarding: React.FC = () => {
           />
         </div>
 
-        <div className="px-4 py-6 md:px-6 md:py-7" key={slide}>
-          <div className="mb-6 mt-1 text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-[1rem] border border-cyan-300/15 bg-cyan-400/10 shadow-[0_0_24px_rgba(77,226,255,0.14)]">
-              <Sparkles className="h-5 w-5 text-cyan-300" />
+        <div className="px-4 py-5 md:px-5 md:py-5" key={slide}>
+          <div className="mb-5 mt-1 text-center">
+            <div className="mx-auto mb-2.5 flex h-10 w-10 items-center justify-center rounded-[0.9rem] border border-cyan-300/15 bg-cyan-400/10 shadow-[0_0_24px_rgba(77,226,255,0.14)]">
+              <Sparkles className="h-4 w-4 text-cyan-300" />
             </div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-zinc-500">
               {slide === 0 ? t('onboarding.step1') : t('onboarding.step2')}
             </p>
-            <p className="text-[13px] text-zinc-400">{t('onboarding.tailorNote')}</p>
+            <p className="text-[12px] text-zinc-400">{t('onboarding.tailorNote')}</p>
           </div>
 
-          <div className="space-y-8 stagger">
+          <div className="space-y-5 stagger">
             {currentQuestions.map((q) => (
               <QuestionBlock
                 key={q.id}
@@ -182,11 +182,11 @@ export const Onboarding: React.FC = () => {
             ))}
           </div>
 
-          <div className="mt-8 text-center">
+          <div className="mt-6 text-center">
             <button
               onClick={handleNext}
               disabled={!canProceed || isSubmitting}
-              className="h-10 rounded-[1rem] bg-[linear-gradient(90deg,#26d9ff_0%,#6ea6ff_38%,#a85cff_72%,#cf78ff_100%)] px-7 text-sm font-semibold text-white shadow-[0_0_20px_rgba(77,226,255,0.14),0_0_18px_rgba(180,108,255,0.14)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
+              className="h-9 rounded-[0.9rem] bg-[linear-gradient(90deg,#26d9ff_0%,#6ea6ff_38%,#a85cff_72%,#cf78ff_100%)] px-6 text-[13px] font-semibold text-white shadow-[0_0_20px_rgba(77,226,255,0.14),0_0_18px_rgba(180,108,255,0.14)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
             >
               {isSubmitting
                 ? t('onboarding.configuring')
@@ -211,28 +211,28 @@ const QuestionBlock: React.FC<{
 
   return (
     <div className="fade-in-up">
-      <h3 className="mb-3 min-h-[1.75rem] text-[16px] font-semibold text-white">{typewriterText}</h3>
-      <div className="grid gap-3">
+      <h3 className="mb-2.5 min-h-[1.4rem] text-[14px] font-semibold text-white">{typewriterText}</h3>
+      <div className="grid gap-2">
         {question.options.map((opt) => (
           <button
             key={opt.key}
             onClick={() => onSelect(opt.key)}
-            className={`flex items-start gap-3 rounded-[1.2rem] border px-3.5 py-3.5 text-left transition-all ${
+            className={`flex items-start gap-2.5 rounded-[0.95rem] border px-3 py-2.5 text-left transition-all ${
               selected === opt.key
                 ? 'border-violet-400/30 bg-violet-500/10 shadow-[0_0_24px_rgba(168,85,247,0.14)]'
                 : 'border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]'
             }`}
           >
             <div
-              className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[0.9rem] text-[10px] font-bold tracking-[0.18em] ${
+              className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[0.75rem] text-[9px] font-bold tracking-[0.18em] ${
                 selected === opt.key ? 'bg-violet-400/15 text-violet-200' : 'bg-white/[0.06] text-zinc-500'
               }`}
             >
               {opt.icon}
             </div>
             <div className="min-w-0">
-              <span className="block text-[13px] font-medium text-white">{t(opt.labelKey)}</span>
-              <span className="mt-1 block text-[11px] leading-relaxed text-zinc-400">{t(opt.subtitleKey)}</span>
+              <span className="block text-[12px] font-medium text-white">{t(opt.labelKey)}</span>
+              <span className="mt-0.5 block text-[10px] leading-relaxed text-zinc-400">{t(opt.subtitleKey)}</span>
             </div>
           </button>
         ))}
