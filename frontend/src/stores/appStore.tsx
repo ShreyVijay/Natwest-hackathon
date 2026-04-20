@@ -32,18 +32,9 @@ import {
   loadPersistedMessages,
   clearPersistedMessages,
 } from '../services/mongoService';
-import { buildApiUrl, buildEngineUrl } from '../config/api';
+import { buildApiUrl } from '../config/api';
 
 type AppView = 'booting' | 'login' | 'upload' | 'onboarding' | 'transition' | 'chat';
-type ServiceWarmStatus = 'pending' | 'waking' | 'ready' | 'failed';
-
-interface WarmupState {
-  message: string;
-  progress: number;
-  backend: ServiceWarmStatus;
-  engine: ServiceWarmStatus;
-  canRetry: boolean;
-}
 
 interface AppContextState {
   currentPersona: Persona;
@@ -80,33 +71,9 @@ interface AppContextState {
   startFreshConversation: () => void;
   loginUser: (username: string) => Promise<void>;
   logoutUser: () => void;
-  warmupState: WarmupState;
-  retryWarmup: () => void;
 }
 
 const AppContext = createContext<AppContextState | undefined>(undefined);
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function pingService(url: string, timeoutMs = 6000): Promise<boolean> {
-  if (!url) return false;
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const res = await fetch(url, {
-      method: 'GET',
-      cache: 'no-store',
-      signal: controller.signal,
-    });
-    return res.ok;
-  } catch {
-    return false;
-  } finally {
-    clearTimeout(timeout);
-  }
-}
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [userId, setUserIdState] = useState<string | null>(getUserId());
@@ -126,15 +93,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [language, setLanguage] = useState(() => localStorage.getItem('t2d_language') || 'en');
   const [isRestoring, setIsRestoring] = useState(false);
   const [hasMoreHistory, setHasMoreHistory] = useState(false);
-  const [warmupState, setWarmupState] = useState<WarmupState>({
-    message: 'Setting things up...',
-    progress: 8,
-    backend: 'pending',
-    engine: 'pending',
-    canRetry: false,
-  });
 
-  const resolvePostWarmupView = useCallback(async () => {
+  const resolveInitialView = useCallback(async () => {
     const activeUser = getUserId();
     if (!getIsLoggedIn() || !activeUser) {
       setAppView('login');
@@ -168,96 +128,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   }, []);
 
-  const runWarmup = useCallback(async () => {
-    const backendHealthUrl = buildApiUrl('/health/ready');
-    const engineHealthUrl = buildEngineUrl('/health');
-
-    setAppView('booting');
-    setWarmupState({
-      message: 'Setting things up...',
-      progress: 10,
-      backend: 'waking',
-      engine: engineHealthUrl ? 'pending' : 'ready',
-      canRetry: false,
-    });
-
-    const warmService = async (
-      key: 'backend' | 'engine',
-      label: string,
-      url: string,
-      progressFloor: number,
-      successProgress: number,
-    ) => {
-      if (!url) {
-        setWarmupState((prev) => ({
-          ...prev,
-          [key]: 'ready',
-          progress: Math.max(prev.progress, successProgress),
-        }));
-        return true;
-      }
-
-      for (let attempt = 1; attempt <= 8; attempt += 1) {
-        setWarmupState((prev) => ({
-          ...prev,
-          [key]: 'waking',
-          message: `${label} is starting up${attempt > 1 ? ` (attempt ${attempt}/8)` : '...'}`,
-          progress: Math.max(prev.progress, progressFloor),
-        }));
-
-        const ok = await pingService(url);
-        if (ok) {
-          setWarmupState((prev) => ({
-            ...prev,
-            [key]: 'ready',
-            message: `${label} is ready.`,
-            progress: Math.max(prev.progress, successProgress),
-          }));
-          return true;
-        }
-
-        await sleep(2000);
-      }
-
-      setWarmupState((prev) => ({
-        ...prev,
-        [key]: 'failed',
-        message: `${label} is still waking up. Please retry setup.`,
-        canRetry: true,
-      }));
-      return false;
-    };
-
-    const backendReady = await warmService('backend', 'Backend', backendHealthUrl, 18, 48);
-    const engineReady = await warmService('engine', 'Execution engine', engineHealthUrl, 56, 88);
-
-    if (!backendReady || !engineReady) {
-      setWarmupState((prev) => ({
-        ...prev,
-        progress: Math.max(prev.progress, 88),
-        canRetry: true,
-      }));
-      return;
-    }
-
-    setWarmupState((prev) => ({
-      ...prev,
-      message: 'Everything is ready. Opening Bolt...',
-      progress: 100,
-      canRetry: false,
-    }));
-
-    await sleep(500);
-    await resolvePostWarmupView();
-  }, [resolvePostWarmupView]);
-
-  const retryWarmup = useCallback(() => {
-    void runWarmup();
-  }, [runWarmup]);
-
   useEffect(() => {
-    void runWarmup();
-  }, [runWarmup]);
+    void resolveInitialView();
+  }, [resolveInitialView]);
 
   useEffect(() => {
     if (!datasetRef) return;
@@ -444,7 +317,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         isNewUser = profile.isNewUser;
       }
     } catch {
-      // Backend down: onboarding will fall back locally once warmup is retried.
+      // Backend unavailable: onboarding/history flows still fall back locally.
     }
 
     const { listConversations } = await import('../services/mongoService');
@@ -516,8 +389,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         startFreshConversation,
         loginUser,
         logoutUser,
-        warmupState,
-        retryWarmup,
       }}
     >
       {children}

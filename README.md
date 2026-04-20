@@ -160,7 +160,6 @@ A CEO and a Data Engineer should not get the same answer to the same question.
 
 ### 7. Built for Real Enterprise Usage
 
-- **Warm-Up Awareness:** The app includes a service warm-up screen for platforms like Render.
 - **Enterprise Demo Path:** A packaged `Superstore.csv` dataset lets evaluators test the platform instantly.
 - **Custom CSV Path:** Users can upload their own CSV and immediately receive schema detection and dataset-aware prompts.
 - **Privacy by Design:** Raw values stay inside the deterministic data pipeline; only schema and query context are exposed to the LLM compiler layer.
@@ -171,25 +170,9 @@ A CEO and a Data Engineer should not get the same answer to the same question.
 
 If you open the live demo or local app, this is the experience from first screen to final insight.
 
-### 1. Warm-Up / Boot Screen
+### 1. Login Screen
 
-The first screen is a service readiness screen.
-Because Bolt runs as multiple services, the backend and Python engine can wake up at different times on hosted platforms.
-
-What the user sees:
-
-- A startup progress bar
-- Separate readiness cards for the **Backend** and **Execution Engine**
-- A retry option if one of the services is still cold-starting
-
-Why it matters:
-
-- It makes deployment latency explicit instead of looking like the product is broken.
-- It improves trust during demos on Render or other hosted environments.
-
-### 2. Login Screen
-
-Once the services are ready, the user lands on a login screen with the Bolt brand and a language selector.
+The user lands on a login screen with the Bolt brand and a language selector.
 
 What the user does:
 
@@ -201,7 +184,7 @@ What happens behind the scenes:
 - Bolt creates or restores the user's profile
 - Returning users can reconnect to earlier conversations and persona state
 
-### 3. Data Connection / Upload Screen
+### 2. Data Connection / Upload Screen
 
 After login, the user reaches the data entry step.
 This is one of the most important screens because it defines how the system understands the dataset.
@@ -236,7 +219,7 @@ Why this is useful:
 - Judges and demo users can enter the platform instantly
 - It guarantees there is a known, analytics-friendly dataset ready for testing
 
-### 4. Persona Onboarding Screen
+### 3. Persona Onboarding Screen
 
 If the user is new, Bolt launches a short multi-step onboarding questionnaire.
 This is not cosmetic.
@@ -255,12 +238,12 @@ What happens next:
 - If the backend is available, that persona is stored for future sessions
 - If not, Bolt can still fall back to a local persona decision path
 
-### 5. Trust Transition Screen
+### 4. Trust Transition Screen
 
 Before the user enters the workspace, Bolt shows a short transition screen.
 This reinforces that the system is configuring itself for the chosen persona and that outputs are deterministic and trust-aware.
 
-### 6. Main Analysis Workspace
+### 5. Main Analysis Workspace
 
 The main page is a **three-panel layout** designed for continuous analysis.
 
@@ -315,7 +298,7 @@ When a user clicks **Open Details** on a response, the right panel shows:
 - raw values
 - limitations
 
-### 7. Response Card Behavior
+### 6. Response Card Behavior
 
 Each AI response card is designed to be interactive and layered.
 Within a single result, the user can:
@@ -327,7 +310,7 @@ Within a single result, the user can:
 - ask Bolt to explain a block in simpler terms
 - click recommended follow-up actions to continue the analysis
 
-### 8. Accessibility and Multilingual Experience in the UI
+### 7. Accessibility and Multilingual Experience in the UI
 
 The webpage is intentionally designed to be inclusive:
 
@@ -454,79 +437,114 @@ Natwest-Hackathon/
 
 ## Quick Start and Local Setup
 
-We've made booting a 3-tier enterprise platform locally as easy as possible.
+Run the project locally in three steps: setup → install → run.
 
-> **LIVE DEMO:** Skip local setup and try the deployed app here: [https://bolt-kzf5.onrender.com/](https://bolt-kzf5.onrender.com/)
+---
 
-### Prerequisites
+### 1. Prerequisites
 
-- **Node.js** `18+` for local development, with Render pinned to `20.x`
-- **Python** `3.10+`
-- **MongoDB** cluster (Atlas or local)
-- **Groq API Key** from [console.groq.com](https://console.groq.com)
+Install these before starting:
 
-### Installation
+- Node.js (v18 or higher)
+- Python (v3.10 or higher)
+- MongoDB (Atlas or local)
+- Groq API Key (from https://console.groq.com)
 
-Clone the repository and configure the environment files:
+---
+
+### 2. Clone Project
 
 ```bash
 git clone https://github.com/Harshitaaaaaaaaaa/Natwest-Hackathon
 cd Natwest-Hackathon
 ```
 
-### Environment Configuration
+---
 
-**Backend Configuration** (`backend/.env`):
+### 3. Configure Environment Variables
+
+Create `.env` files in both folders.
+
+#### Backend → `backend/.env`
 
 ```env
-MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/
-GROQ_API_KEY=gsk_your_key_here
+MONGODB_URI=your_mongodb_connection_string
+GROQ_API_KEY=your_groq_api_key
 PORT=5000
 EXECUTION_ENGINE_URL=http://localhost:8000
 CORS_ALLOWED_ORIGINS=http://localhost:5173
 ```
 
-**Frontend Configuration** (`frontend/.env`):
+#### Frontend → `frontend/.env`
 
 ```env
-VITE_GROQ_API_KEY=gsk_your_key_here
+VITE_GROQ_API_KEY=your_groq_api_key
 VITE_CHAT_API_URL=http://localhost:5000
 ```
 
-### Dependency Installation
+---
 
-Run the following commands from the project root:
+### 4. Install Dependencies
 
+#### Windows PowerShell
+```powershell
+cd frontend
+npm install
+
+cd ../backend
+npm install
+
+cd ../execution_engine
+pip install -r requirements.txt
+```
+
+#### Mac/Linux
 ```bash
 cd frontend && npm install
 cd ../backend && npm install
 cd ../execution_engine && pip install -r requirements.txt
 ```
 
-### Execution
+---
 
-**For Windows (One-Click Boot):**
+### 5. Run the Project
 
+#### Windows (recommended)
 ```cmd
 scripts\start_all.bat
 ```
 
-**For Mac/Linux (Multi-terminal Boot):**
+#### Mac/Linux (3 terminals)
 
+Terminal 1:
 ```bash
-# Terminal 1: Boot Python deterministic math engine
-cd execution_engine && python -m uvicorn src.main:app --port 8000 --host 0.0.0.0
-
-# Terminal 2: Boot Node API
-cd backend && npm run dev
-
-# Terminal 3: Boot React UI
-cd frontend && npm run dev
+cd execution_engine
+python -m uvicorn src.main:app --port 8000 --host 0.0.0.0
 ```
 
-Navigate to [http://localhost:5173](http://localhost:5173) to enter the platform.
+Terminal 2:
+```bash
+cd backend
+npm run dev
+```
 
-> **Note on Testing Data:** Sample datasets are included in `execution_engine/data/` such as `Superstore.csv`. For the best first-run demo experience, upload or select that file to explore the full analytical feature set.
+Terminal 3:
+```bash
+cd frontend
+npm run dev
+```
+
+---
+
+### 6. Open App
+
+http://localhost:5173
+
+---
+
+### Test Dataset
+
+execution_engine/data/Superstore.csv
 
 ---
 
@@ -534,52 +552,60 @@ Navigate to [http://localhost:5173](http://localhost:5173) to enter the platform
 
 ### Frontend
 
-- Build with `cd frontend && npm run build`
-- Static output is generated in `frontend/dist/`
-- Can be hosted on Render Static Sites, Netlify, Vercel, or any static host
+```bash
+cd frontend
+npm run build
+```
+
+Output: frontend/dist/
+
+---
 
 ### Backend
 
-- Start with `npm start`
-- Requires `MONGODB_URI`, `GROQ_API_KEY`, and `EXECUTION_ENGINE_URL`
-- Exposes health routes at `/` and `/health/ready`
+```bash
+npm start
+```
+
+Requires:
+- MONGODB_URI
+- GROQ_API_KEY
+- EXECUTION_ENGINE_URL
+
+---
 
 ### Execution Engine
 
-- Native start:
-
 ```bash
-cd execution_engine && python -m uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}
+cd execution_engine
+python -m uvicorn src.main:app --host 0.0.0.0 --port 8000
 ```
 
-- It exposes deterministic compute and dataset profiling routes such as:
-  - `/compute`
-  - `/health`
-  - `/upload_dataset`
-  - `/analyze_schema`
+Endpoints:
+- /compute
+- /upload_dataset
+- /analyze_schema
+
+---
 
 ### Render Deployment
 
-The repo includes a root-level `render.yaml` blueprint that provisions:
+Services:
+- Bolt-frontend
+- Bolt-backend
+- Bolt-engine
 
-- `Bolt-frontend` (Static Site)
-- `Bolt-backend` (Node Web Service)
-- `Bolt-engine` (Python Web Service)
+Env mapping:
+- VITE_CHAT_API_URL → backend
+- EXECUTION_ENGINE_URL → engine
+- CORS_ALLOWED_ORIGINS → frontend
 
-Environment wiring handled in Render:
+Secrets:
+- Backend → MONGODB_URI, GROQ_API_KEY
+- Frontend → VITE_GROQ_API_KEY
 
-- `VITE_CHAT_API_URL` -> backend URL
-- `EXECUTION_ENGINE_URL` -> engine URL
-- `CORS_ALLOWED_ORIGINS` -> frontend URL
-
-Required secret environment variables:
-
-- Backend: `MONGODB_URI`, `GROQ_API_KEY`
-- Frontend: `VITE_GROQ_API_KEY` if frontend-side Groq features are enabled
-
-Important deployment note:
-
-- Uploads are proxied backend -> engine so the file is saved in the engine service where the computation actually runs.
+Note:
+- Upload flow: frontend → backend → engine
 
 ---
 
@@ -605,24 +631,7 @@ Bolt required solving real engineering issues across deployment, orchestration, 
 - separated "LLM for intent" from "Python for math" so partial LLM instability would not corrupt the numeric layer
 - added fallback keyword classification when the LLM is unavailable
 
-### 2. Render Cold Starts and Hosted Demo Reliability
-
-**Challenge:** Multi-service deployments on Render can appear broken during cold starts, especially when backend and engine wake up asynchronously.
-
-**What we faced:**
-
-- backend and engine waking at different times
-- health checks passing for one service while another was still sleeping
-- poor first impressions during hosted demos
-
-**How we solved it:**
-
-- added a dedicated warm-up screen in the frontend
-- built backend readiness checks that wait for the execution engine to be ready
-- added retry flows and visible progress to make deployment latency understandable to users
-- exposed explicit `/health` and `/health/ready` paths
-
-### 3. File Upload and Dataset Profiling
+### 2. File Upload and Dataset Profiling
 
 **Challenge:** Real CSVs are messy. They arrive with dirty encodings, inconsistent date formats, and unpredictable column structures.
 
@@ -642,7 +651,7 @@ Bolt required solving real engineering issues across deployment, orchestration, 
 - supported multiple encodings and broad date parsing in the engine
 - restricted dataset resolution to safe `data/` and `uploads/` zones
 
-### 4. Engine API Reliability and Cross-Service Communication
+### 3. Engine API Reliability and Cross-Service Communication
 
 **Challenge:** A three-service app becomes fragile if the API contracts between frontend, backend, and engine are inconsistent.
 
@@ -659,7 +668,7 @@ Bolt required solving real engineering issues across deployment, orchestration, 
 - used a strict execution-plan contract between Node and Python
 - passed only dataset metadata and schema context to the LLM compiler
 
-### 5. Frontend Rendering Under Unpredictable Analytical Output
+### 4. Frontend Rendering Under Unpredictable Analytical Output
 
 **Challenge:** Analytical payloads vary wildly depending on the query, persona, and dataset shape.
 
@@ -677,7 +686,7 @@ Bolt required solving real engineering issues across deployment, orchestration, 
 - bounded category outputs and added "Others" style bucketing in the engine utilities
 - separated raw result contracts from persona-aware rendering so the same output can be reshaped cleanly
 
-### 6. Persona Switching Without Requerying
+### 5. Persona Switching Without Requerying
 
 **Challenge:** We wanted the same computed answer to feel appropriate for six different users without paying for six LLM calls or rerunning analytics.
 
@@ -693,7 +702,7 @@ Bolt required solving real engineering issues across deployment, orchestration, 
 - created a response mapper that rebuilds the UI response locally for each persona
 - made persona switching instant and token-free
 
-### 7. Accessibility, Voice, and Multilingual UX
+### 6. Accessibility, Voice, and Multilingual UX
 
 **Challenge:** Accessibility features often conflict with visually dense analytics interfaces.
 
@@ -710,7 +719,7 @@ Bolt required solving real engineering issues across deployment, orchestration, 
 - tied UI translation and LLM language generation to the same language state
 - supported RTL layout direction switching in the interface
 
-### 8. Persistence and Resilience
+### 7. Persistence and Resilience
 
 **Challenge:** Hackathon apps often lose all context on refresh or fail completely when the backend is down.
 

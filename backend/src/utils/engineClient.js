@@ -119,13 +119,8 @@ async function engineJsonRequest(path, options = {}, retryOptions = {}) {
   );
 }
 
-async function waitForEngineReady() {
-  return engineJsonRequest('/health', { method: 'GET' }, { retries: 6, initialDelayMs: 1500, timeoutMs: 8000 });
-}
-
 module.exports = {
   buildEngineUrl,
   engineRequest,
   engineJsonRequest,
-  waitForEngineReady,
 };

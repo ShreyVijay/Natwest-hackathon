@@ -1,5 +1,4 @@
 import os
-from datetime import datetime, timezone
 
 import uvicorn
 from fastapi import FastAPI
@@ -55,15 +54,6 @@ app.include_router(profiler_router)
 @app.get("/")
 def home():
     return {"service": "execution_engine", "status": "ok"}
-
-
-@app.get("/health")
-def health():
-    return {
-        "service": "execution_engine",
-        "status": "ok",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    }
 
 
 if __name__ == "__main__":
